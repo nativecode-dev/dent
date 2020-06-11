@@ -1,17 +1,9 @@
-image: alpine:latest
+image: nativecode/deno:0.1.1
 
 stages:
-  - build
-
-before_script:
-  - apk add curl
-  - curl -fsSL https://deno.land/x/install/install.sh | sh
+  - test
 
 continuous:
-  stage: build
+  stage: test
   script:
-    - export DENO_INSTALL="/root/.deno"
-    - export DENO_DIR="$DENO_INSTALL/.cache"
-    - export PATH="$DENO_INSTALL/bin:$PATH"
-    - which deno
     - deno test
