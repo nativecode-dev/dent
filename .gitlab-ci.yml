@@ -1,0 +1,13 @@
+image: alpine:latest
+
+stages:
+  - build
+
+before_script:
+  - apk add curl
+  - curl -fsSL https://deno.land/x/install/install.sh | sh
+
+continuous:
+  stage: build
+  script:
+    - deno test mod.ts
