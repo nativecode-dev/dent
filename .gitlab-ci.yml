@@ -1,4 +1,4 @@
-image: nativecode/deno:0.1.1
+image: nativecode/deno:0.2.0
 
 stages:
   - test
