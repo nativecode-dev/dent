@@ -7,7 +7,7 @@ stages:
 test:
   stage: test
   script:
-    - deno test
+    - deno test --allow-env --allow-read
 
 publish:
   stage: publish
