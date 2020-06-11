@@ -21,7 +21,7 @@ export class ObjectMap {
   private readonly options: ObjectMapOptions
 
   constructor(instance: any, options: Essentials.DeepPartial<ObjectMapOptions> = {}) {
-    this.options = ObjectMerge.merge({}, DefaultObjectMapOptions, options)
+    this.options = ObjectMerge.merge<ObjectMapOptions>({}, DefaultObjectMapOptions, options)
 
     this.objmap = {
       name: 'root',

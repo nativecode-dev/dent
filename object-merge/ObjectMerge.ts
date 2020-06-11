@@ -1,3 +1,5 @@
+import { Essentials } from './deps.ts'
+
 import { ObjectMergeOptions, DefaultObjectMergeOptions } from './ObjectMergeOptions.ts'
 
 export namespace ObjectMerge {
@@ -43,11 +45,11 @@ export namespace ObjectMerge {
     }, target)
   }
 
-  export function merge(...targets: any[]): any {
+  export function merge<T extends any>(...targets: Array<Essentials.DeepPartial<T>>): T {
     return mergex(DefaultObjectMergeOptions, ...targets)
   }
 
-  export function mergex(options: ObjectMergeOptions, ...targets: any[]): any {
-    return targets.reduce((target, source) => clone(source, target, options))
+  export function mergex<T extends any>(options: ObjectMergeOptions, ...targets: Array<Essentials.DeepPartial<T>>): T {
+    return targets.reduce((target, source) => clone(source, target, options)) as T
   }
 }

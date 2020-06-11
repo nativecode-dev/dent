@@ -2,8 +2,20 @@ image: nativecode/deno:0.2.0
 
 stages:
   - test
+  - publish
 
-continuous:
+test:
   stage: test
   script:
     - deno test
+
+publish:
+  stage: publish
+  script:
+    - mkdir dist
+    - deno bundle mod.ts dist/mod.ts
+  only:
+    - master
+  artifacts:
+    paths:
+      - dist
