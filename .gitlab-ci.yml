@@ -13,4 +13,5 @@ continuous:
     - export DENO_INSTALL="/root/.deno"
     - export DENO_DIR="$DENO_INSTALL/.cache"
     - export PATH="$DENO_INSTALL/bin:$PATH"
+    - which deno
     - deno test

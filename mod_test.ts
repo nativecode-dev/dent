@@ -1,2 +1,2 @@
-import './object-map/ObjectMap_test.ts'
-import './object-merge/ObjectMerge_test.ts'
+import './object-map/mod_test.ts'
+import './object-merge/mod_test.ts'
