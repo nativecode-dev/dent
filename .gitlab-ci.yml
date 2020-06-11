@@ -6,7 +6,9 @@ stages:
 before_script:
   - apk add curl
   - curl -fsSL https://deno.land/x/install/install.sh | sh
-
+  - export DENO_INSTALL="/root/.deno"
+  - export DENO_DIR="$DENO_INSTALL/.cache"
+  - export PATH="$DENO_INSTALL/bin:$PATH"
 continuous:
   stage: build
   script:
