@@ -1,3 +1,3 @@
-export * from './ObjectMap.ts'
-export * from './ObjectMapOptions.ts'
-export * from './ObjectMapValue.ts'
+export * from './lib/ObjectMapValue.ts'
+export * from './lib/ObjectMap.ts'
+export * from './lib/ObjectMapOptions.ts'

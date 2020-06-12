@@ -1,1 +1,1 @@
-import './ObjectMerge_test.ts'
+import './tests/ObjectMerge_test.ts'

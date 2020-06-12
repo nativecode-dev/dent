@@ -1,13 +1,13 @@
-import { assertEquals } from './test_deps.ts'
-import { ObjectMerge } from './ObjectMerge.ts'
+import { assertEquals } from '../test_deps.ts'
+import { ObjectMerge } from '../lib/ObjectMerge.ts'
 
 Deno.test('should merge arrays', () => {
-  const merged = ObjectMerge.merge(['a', 'b', 'c'], ['d', 'e', 'e'])
+  const merged: string[] = ObjectMerge.merge(['a', 'b', 'c'], ['d', 'e', 'e'])
   assertEquals(merged.sort(), ['a', 'b', 'c', 'd', 'e', 'e'])
 })
 
 Deno.test('should dedupe arrays', () => {
-  const merged = ObjectMerge.mergex({ dedupe: true }, ['a', 'b', 'c', 'b'], ['c', 'd', 'e', 'e'])
+  const merged: string[] = ObjectMerge.mergex({ dedupe: true }, ['a', 'b', 'c', 'b'], ['c', 'd', 'e', 'e'])
   assertEquals(merged.sort(), ['a', 'b', 'c', 'd', 'e'])
 })
 

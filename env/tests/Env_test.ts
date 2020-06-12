@@ -1,6 +1,6 @@
-import { Env } from './mod.ts'
+import { Env } from '../mod.ts'
 
-import { assertEquals } from './test_deps.ts'
+import { assertEquals } from '../test_deps.ts'
 
 const ENV = {
   APP_TEST: 'value',

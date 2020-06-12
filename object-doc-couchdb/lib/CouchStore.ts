@@ -1,4 +1,4 @@
-import { CouchClient, DocumentStoreConfig } from './deps.ts'
+import { CouchClient, DocumentStoreConfig } from '../deps.ts'
 
 export class CouchStore implements CouchStore {
   protected readonly client: CouchClient

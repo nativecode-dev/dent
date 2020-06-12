@@ -1,4 +1,4 @@
-import { Essentials, ObjectMerge } from './deps.ts'
+import { Essentials, ObjectMerge } from '../deps.ts'
 
 import { Resource } from './Resource.ts'
 import { ResourceOptions } from './ResourceOptions.ts'

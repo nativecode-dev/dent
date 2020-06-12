@@ -1,4 +1,4 @@
-import { Essentials, ObjectMap, ObjectMerge } from './deps.ts'
+import { Essentials, ObjectMap, ObjectMerge } from '../deps.ts'
 
 import { EnvOptions } from './EnvOptions.ts'
 

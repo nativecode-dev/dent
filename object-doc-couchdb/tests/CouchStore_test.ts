@@ -1,5 +1,5 @@
-import { CouchStore } from './mod.ts'
-import { config } from './test_deps.ts'
+import { CouchStore } from '../mod.ts'
+import { config } from '../test_deps.ts'
 
 const cfg = config()
 

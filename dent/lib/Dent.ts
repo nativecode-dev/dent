@@ -1,4 +1,4 @@
-import { config, Essentials, ObjectMerge } from './deps.ts'
+import { config, Essentials, ObjectMerge } from '../deps.ts'
 
 import { DentOptions } from './DentOptions.ts'
 

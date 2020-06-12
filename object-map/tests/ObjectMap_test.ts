@@ -1,5 +1,5 @@
-import { assertEquals } from './test_deps.ts'
-import { ObjectMap } from './ObjectMap.ts'
+import { assertEquals } from '../test_deps.ts'
+import { ObjectMap } from '../lib/ObjectMap.ts'
 
 const SAMPLE = {
   account: {

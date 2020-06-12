@@ -1,5 +1,4 @@
-import { DocumentCollection, CouchClient } from './deps.ts'
-import { Document } from './deps.ts'
+import { Document, DocumentCollection, CouchClient } from '../deps.ts'
 
 export class CouchCollection<T extends Document> implements DocumentCollection<T> {
   constructor(private readonly name: string, private readonly client: CouchClient) {}

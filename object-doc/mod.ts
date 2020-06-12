@@ -1,4 +1,4 @@
-export { Document } from './Document.ts'
-export { DocumentCollection } from './DocumentCollection.ts'
-export { DocumentStore } from './DocumentStore.ts'
-export { DocumentStoreConfig } from './DocumentStoreConfig.ts'
+export * from './lib/DocumentCollection.ts'
+export * from './lib/Document.ts'
+export * from './lib/DocumentStoreConfig.ts'
+export * from './lib/DocumentStore.ts'

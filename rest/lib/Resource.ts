@@ -1,4 +1,4 @@
-import { Essentials, ObjectMerge } from './deps.ts'
+import { Essentials, ObjectMerge } from '../deps.ts'
 
 import { HttpError } from './HttpError.ts'
 import { ResourceParams } from './ResourceParam.ts'

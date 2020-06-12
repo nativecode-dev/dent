@@ -1,2 +1,2 @@
-export { CouchCollection } from './CouchCollection.ts'
-export { CouchStore } from './CouchStore.ts'
+export * from './lib/CouchCollection.ts'
+export * from './lib/CouchStore.ts'

@@ -1,1 +1,1 @@
-import './ObjectMap_test.ts'
+import './tests/ObjectMap_test.ts'

@@ -1,1 +1,1 @@
-import './Env_test.ts'
+import './tests/Env_test.ts'

@@ -1,1 +1,1 @@
-import './CouchStore_test.ts'
+import './tests/CouchStore_test.ts'

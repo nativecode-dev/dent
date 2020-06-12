@@ -1,4 +1,4 @@
-import { Essentials } from './deps.ts'
+import { Essentials } from '../deps.ts'
 
 import { ObjectMergeOptions, DefaultObjectMergeOptions } from './ObjectMergeOptions.ts'
 
