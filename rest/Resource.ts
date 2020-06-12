@@ -1,4 +1,4 @@
-import { ObjectMerge } from './deps.ts'
+import { Essentials, ObjectMerge } from './deps.ts'
 
 import { HttpError } from './HttpError.ts'
 import { ResourceParams } from './ResourceParam.ts'
@@ -18,7 +18,7 @@ export abstract class Resource {
   private readonly options: ResourceOptions
   private readonly url: URL
 
-  constructor(url: URL, options: Partial<ResourceOptions> = {}) {
+  constructor(url: URL, options: Essentials.DeepPartial<ResourceOptions> = {}) {
     this.options = ObjectMerge.merge<ResourceOptions>(DefaultOptions, options)
 
     if (url.href.endsWith('/')) {
