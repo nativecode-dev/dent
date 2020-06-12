@@ -1,9 +1,9 @@
-import { ObjectMerge } from './deps.ts'
+import { Essentials, ObjectMerge } from './deps.ts'
 
 import { Resource } from './Resource.ts'
 import { ResourceOptions } from './ResourceOptions.ts'
 
-const DefaultResourceOptions: Partial<ResourceOptions> = {
+const DefaultResourceOptions: Essentials.DeepPartial<ResourceOptions> = {
   headers: [
     {
       name: 'Accept',
@@ -17,7 +17,7 @@ const DefaultResourceOptions: Partial<ResourceOptions> = {
 }
 
 export abstract class RestResource extends Resource {
-  constructor(url: URL, options: Partial<ResourceOptions> = {}) {
+  constructor(url: URL, options: Essentials.DeepPartial<ResourceOptions> = {}) {
     super(url, ObjectMerge.merge<ResourceOptions>(DefaultResourceOptions, options))
   }
 }
