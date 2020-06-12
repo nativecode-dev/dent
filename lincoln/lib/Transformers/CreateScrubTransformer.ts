@@ -1,4 +1,4 @@
-import { ObjectMap } from '../deps.ts'
+import { ObjectMap } from '../../deps.ts'
 
 import { LincolnLogTransform } from '../LincolnLogTransform.ts'
 
