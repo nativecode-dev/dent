@@ -40,11 +40,11 @@ export abstract class Resource {
     return this.json(route, 'DELETE', params)
   }
 
-  protected async http_head(route: string, ...params: ResourceParams): Promise<Deno.Buffer> {
+  protected async http_head(route: string, ...params: ResourceParams): Promise<Response> {
     return this.response(route, 'HEAD', params)
   }
 
-  protected async http_options(route: string, ...params: ResourceParams): Promise<Deno.Buffer> {
+  protected async http_options(route: string, ...params: ResourceParams): Promise<Response> {
     return this.response(route, 'OPTIONS', params)
   }
 
@@ -60,7 +60,7 @@ export abstract class Resource {
     return this.json(route, 'PUT', params, resource)
   }
 
-  protected async http_trace(route: string, ...params: ResourceParams): Promise<Deno.Buffer> {
+  protected async http_trace(route: string, ...params: ResourceParams): Promise<Response> {
     return this.response(route, 'TRACE', params)
   }
 
@@ -73,8 +73,8 @@ export abstract class Resource {
     method: string,
     params: ResourceParams,
   ): Promise<ArrayBuffer | SharedArrayBuffer> {
-    const buffer = await this.response(route, method, params)
-    return buffer.bytes()
+    const response = await this.response(route, method, params)
+    return response.arrayBuffer()
   }
 
   protected buffer(route: string, method: string, params: ResourceParams) {
@@ -82,16 +82,11 @@ export abstract class Resource {
   }
 
   protected async json<T, R>(route: string, method: string, params: ResourceParams, resource?: T): Promise<R> {
-    const buffer = await this.response(route, method, params, resource)
-    return JSON.parse(buffer.toString())
+    const response = await this.response(route, method, params, resource)
+    return response.json()
   }
 
-  protected async response(
-    route: string,
-    method: string,
-    params: ResourceParams = [],
-    body?: any,
-  ): Promise<Deno.Buffer> {
+  protected async response(route: string, method: string, params: ResourceParams = [], body?: any): Promise<Response> {
     try {
       const headers = this.headers(params)
       const url = this.getRoute(route, params).href
@@ -103,7 +98,7 @@ export abstract class Resource {
         throw error
       }
 
-      return new Deno.Buffer(await response.arrayBuffer())
+      return response
     } catch (error) {
       throw error
     }
@@ -114,8 +109,8 @@ export abstract class Resource {
   }
 
   protected async text(route: string, method: string, params: ResourceParams): Promise<string> {
-    const buffer = await this.response(route, method, params)
-    return buffer.toString()
+    const response = await this.response(route, method, params)
+    return response.text()
   }
 
   private getRoute(route: string, params: ResourceParams = []): URL {

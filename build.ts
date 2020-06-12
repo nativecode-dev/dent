@@ -89,7 +89,7 @@ async function crawlProjectFiles(cwd: string): Promise<ProjectModule> {
   }
 }
 
-async function updateProjectFiles(module: ProjectModule) {
+async function updateProjectFiles(module: ProjectModule): Promise<ProjectModule> {
   const codefiles = module.code
     .filter((file) => file.location.split('/').includes('lib'))
     .map((file) => {
@@ -136,6 +136,7 @@ async function updateProject(project: Project) {
   }
 
   const tests = project.modules
+    .filter((module) => module.files.some((file) => file.name === 'mod_test.ts'))
     .map((module) => {
       const filename = relative(project.location, join(module.location, 'mod_test.ts'))
       return `import './${filename}'`
