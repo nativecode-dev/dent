@@ -1,5 +1,5 @@
-import { exists } from 'https://deno.land/std/fs/exists.ts'
-import { join, relative } from 'https://deno.land/std/path/mod.ts'
+import { exists } from 'https://deno.land/std@0.57.0/fs/exists.ts'
+import { join, relative } from 'https://deno.land/std@0.57.0/path/mod.ts'
 
 interface Project {
   location: string
