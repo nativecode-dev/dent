@@ -1,6 +1,0 @@
-import './dent/mod_test.ts'
-import './env/mod_test.ts'
-import './object-doc-couchdb/mod_test.ts'
-import './object-map/mod_test.ts'
-import './object-merge/mod_test.ts'
-import './rest/mod_test.ts'

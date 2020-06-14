@@ -1,0 +1,7 @@
+ignored:
+  - Dependencies.*.ts
+  - ts-types
+permissions:
+  - allow-env
+  - allow-read
+  - allow-run

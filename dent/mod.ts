@@ -1,4 +1,3 @@
 export * from './lib/Dent.ts'
-export * from './lib/DentConfig.ts'
-export * from './lib/DentOptions.ts'
-export * from './lib/decorators/Resource.ts'
+export * from './lib/DentExplorer.ts'
+export * from './lib/DentWatcher.ts'

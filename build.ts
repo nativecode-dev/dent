@@ -23,7 +23,7 @@ interface ProjectFile extends Deno.DirEntry {
 
 interface ProjectCodeFile extends ProjectFile {}
 
-const RESERVED_FILE_NAMES = ['deps.ts', 'mod.ts', 'mod_run.ts', 'mod_test.ts', 'test_deps.ts']
+const RESERVED_FILE_NAMES = ['deps.ts', 'mod.ts', 'mod_run.ts', 'mod_test.ts', 'test.ts', 'test_deps.ts']
 
 const DENO_IGNORE = new Ignore()
 const DENO_IGNORE_NAME = '.denoignore'
@@ -130,7 +130,7 @@ async function updateModuleFiles(module: ProjectModule): Promise<ProjectModule> 
     .sort()
 
   const mod = path.join(module.location, 'mod.ts')
-  const modtest = path.join(module.location, 'mod_test.ts')
+  const modtest = path.join(module.location, 'test.ts')
 
   if (await exists(mod)) {
     await Deno.remove(mod)
@@ -159,14 +159,14 @@ async function updateProject(project: Project) {
   }
 
   const tests = project.modules
-    .filter((module) => module.files.some((file) => file.name === 'mod_test.ts'))
+    .filter((module) => module.files.some((file) => file.name === 'test.ts'))
     .map((module) => {
-      const filename = path.relative(project.location, path.join(module.location, 'mod_test.ts'))
+      const filename = path.relative(project.location, path.join(module.location, 'test.ts'))
       return `import './${filename}'`
     })
     .sort()
 
-  await Deno.writeTextFile(path.join(project.location, 'mod_test.ts'), tests.join('\n'))
+  await Deno.writeTextFile(path.join(project.location, 'test.ts'), tests.join('\n'))
 }
 
 await updateProject(await crawlProject(Deno.cwd()))

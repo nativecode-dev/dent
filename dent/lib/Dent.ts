@@ -1,20 +1,13 @@
-import { Application, Essentials, Router, Injectable } from '../deps.ts'
+import { DentExplorer } from './DentExplorer.ts'
+import { DentWatcher } from './DentWatcher.ts'
 
-import { DentConfig } from './DentConfig.ts'
-import { DentOptions } from './DentOptions.ts'
+export class Dent {
+  protected readonly explorer: DentExplorer = new DentExplorer()
 
-@Injectable()
-export class Dent<T extends DentOptions> extends Application {
-  constructor(private readonly config: DentConfig<T>, protected readonly router: Router) {
-    super()
-  }
+  async exec() {
+    const { config, module } = await this.explorer.explore(Deno.cwd())
 
-  async start(): Promise<void> {
-    const options = await this.config.load(Deno.cwd(), {} as Essentials.DeepPartial<T>)
-    return this.listen(options.server)
-  }
-
-  stop() {
-    Deno.exit()
+    const watcher = new DentWatcher(config, module)
+    await watcher.start()
   }
 }
