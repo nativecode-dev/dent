@@ -14,7 +14,7 @@ publish:
   stage: publish
   script:
     - mkdir dist
-    - deno bundle mod.ts dist/mod.ts
+    - deno bundle -c tsconfig.json mod.ts dist/mod.ts
   only:
     - master
   artifacts:
