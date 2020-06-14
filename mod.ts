@@ -1,3 +1,4 @@
+export * from './debounce/mod.ts'
 export * from './dent/mod.ts'
 export * from './env/mod.ts'
 export * from './lincoln/mod.ts'
