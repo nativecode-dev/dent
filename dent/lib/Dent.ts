@@ -1,13 +1,20 @@
-import { config, Essentials, ObjectMerge } from '../deps.ts'
+import { Application, Essentials, Router, Injectable } from '../deps.ts'
 
+import { DentConfig } from './DentConfig.ts'
 import { DentOptions } from './DentOptions.ts'
 
-export class Dent {
-  private readonly env: { [key: string]: string }
-  private readonly options: DentOptions
+@Injectable()
+export class Dent<T extends DentOptions> extends Application {
+  constructor(private readonly config: DentConfig<T>, protected readonly router: Router) {
+    super()
+  }
 
-  constructor(options: Essentials.DeepPartial<DentOptions>) {
-    this.env = config()
-    this.options = ObjectMerge.merge<DentOptions>(options)
+  async start(): Promise<void> {
+    const options = await this.config.load(Deno.cwd(), {} as Essentials.DeepPartial<T>)
+    return this.listen(options.server)
+  }
+
+  stop() {
+    Deno.exit()
   }
 }

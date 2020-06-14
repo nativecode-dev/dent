@@ -1,5 +1,7 @@
+import * as path from 'https://deno.land/std@0.57.0/path/mod.ts'
+
+import { Ignore } from './ignore/mod.ts'
 import { exists } from 'https://deno.land/std@0.57.0/fs/exists.ts'
-import { join, relative } from 'https://deno.land/std@0.57.0/path/mod.ts'
 
 interface Project {
   location: string
@@ -21,7 +23,10 @@ interface ProjectFile extends Deno.DirEntry {
 
 interface ProjectCodeFile extends ProjectFile {}
 
-const RESERVED_FILE_NAMES = ['deps.ts', 'mod.ts', 'mod_test.ts', 'test_deps.ts']
+const RESERVED_FILE_NAMES = ['deps.ts', 'mod.ts', 'mod_run.ts', 'mod_test.ts', 'test_deps.ts']
+
+const DENO_IGNORE = new Ignore()
+const DENO_IGNORE_NAME = '.denoignore'
 
 async function crawlProject(cwd: string): Promise<Project> {
   const project: Project = {
@@ -30,17 +35,15 @@ async function crawlProject(cwd: string): Promise<Project> {
     name: cwd,
   }
 
-  for await (const entry of Deno.readDir(cwd)) {
-    if (entry.isSymlink) {
-      continue
-    }
+  await updateDenoIgnore(path.join(cwd, DENO_IGNORE_NAME), DENO_IGNORE)
 
-    if (entry.name.startsWith('.')) {
+  for await (const entry of Deno.readDir(cwd)) {
+    if (ignoreEntry(cwd, cwd, entry)) {
       continue
     }
 
     if (entry.isDirectory) {
-      const module = await crawlProjectFiles(join(cwd, entry.name))
+      const module = await crawlModuleFiles(path.join(cwd, entry.name))
       project.modules.push(module)
     }
   }
@@ -48,25 +51,19 @@ async function crawlProject(cwd: string): Promise<Project> {
   return project
 }
 
-async function crawlProjectFiles(cwd: string): Promise<ProjectModule> {
+async function crawlModuleFiles(cwd: string): Promise<ProjectModule> {
   const projectProjectFiles = async (workdir: string) => {
     let files: ProjectFile[] = []
 
+    await updateDenoIgnore(path.join(workdir, DENO_IGNORE_NAME), DENO_IGNORE)
+
     for await (const entry of Deno.readDir(workdir)) {
-      if (entry.isSymlink) {
-        continue
-      }
-
-      if (entry.name === '.modignore') {
-        return []
-      }
-
-      if (entry.name.startsWith('.')) {
+      if (ignoreEntry(cwd, workdir, entry)) {
         continue
       }
 
       if (entry.isDirectory) {
-        const children = await projectProjectFiles([workdir, entry.name].join('/'))
+        const children = await projectProjectFiles(path.join(workdir, entry.name))
         files = [...files, ...children]
       }
 
@@ -89,11 +86,37 @@ async function crawlProjectFiles(cwd: string): Promise<ProjectModule> {
   }
 }
 
-async function updateProjectFiles(module: ProjectModule): Promise<ProjectModule> {
+function ignoreEntry(cwd: string, workdir: string, entry: Deno.DirEntry): boolean {
+  const fullpath = path.join(workdir, entry.name)
+  const ignored = DENO_IGNORE.test(path.relative(cwd, fullpath))
+
+  if (ignored.ignored && ignored.unignored === false) {
+    return true
+  }
+
+  if (entry.isSymlink || entry.name.startsWith('.')) {
+    return true
+  }
+
+  return false
+}
+
+async function updateDenoIgnore(path: string, ignore: Ignore) {
+  if (await exists(path)) {
+    const modignore = await Deno.readTextFile(path)
+
+    modignore
+      .trim()
+      .split('\n')
+      .reduce((result, current) => result.add(current), ignore)
+  }
+}
+
+async function updateModuleFiles(module: ProjectModule): Promise<ProjectModule> {
   const codefiles = module.code
     .filter((file) => file.location.split('/').includes('lib'))
     .map((file) => {
-      const filename = relative(module.location, join(file.location, file.name))
+      const filename = path.relative(module.location, path.join(file.location, file.name))
       return `export * from './${filename}'`
     })
     .sort()
@@ -101,13 +124,13 @@ async function updateProjectFiles(module: ProjectModule): Promise<ProjectModule>
   const testfiles = module.code
     .filter((file) => file.location.split('/').includes('tests'))
     .map((file) => {
-      const filename = relative(module.location, join(file.location, file.name))
+      const filename = path.relative(module.location, path.join(file.location, file.name))
       return `import './${filename}'`
     })
     .sort()
 
-  const mod = join(module.location, 'mod.ts')
-  const modtest = join(module.location, 'mod_test.ts')
+  const mod = path.join(module.location, 'mod.ts')
+  const modtest = path.join(module.location, 'mod_test.ts')
 
   if (await exists(mod)) {
     await Deno.remove(mod)
@@ -131,20 +154,19 @@ async function updateProjectFiles(module: ProjectModule): Promise<ProjectModule>
 async function updateProject(project: Project) {
   for (const module of project.modules) {
     if (module.ignored === false) {
-      await updateProjectFiles(module)
+      await updateModuleFiles(module)
     }
   }
 
   const tests = project.modules
     .filter((module) => module.files.some((file) => file.name === 'mod_test.ts'))
     .map((module) => {
-      const filename = relative(project.location, join(module.location, 'mod_test.ts'))
+      const filename = path.relative(project.location, path.join(module.location, 'mod_test.ts'))
       return `import './${filename}'`
     })
     .sort()
 
-  await Deno.writeTextFile(join(project.location, 'mod_test.ts'), tests.join('\n'))
+  await Deno.writeTextFile(path.join(project.location, 'mod_test.ts'), tests.join('\n'))
 }
 
-const project = await crawlProject(Deno.cwd())
-await updateProject(project)
+await updateProject(await crawlProject(Deno.cwd()))
