@@ -9,7 +9,7 @@ const DefaultOptions: ResourceOptions = {
   headers: [
     {
       name: 'User-Agent',
-      value: `rest-client/1.0 ($Deno.version)`,
+      value: `rest-client/1.0 (${Deno.version})`,
     },
   ],
 }
