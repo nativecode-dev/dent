@@ -1,11 +1,31 @@
-type DebounceCallback = (...args: any[]) => any | Promise<any>
+interface GlobalContext {
+  [key: string]: DebounceContext
+}
 
-const context: { timeout: number | null } = { timeout: null }
+interface DebounceContext {
+  name: string
+  timer: number | null
+}
 
-export function debounce(callback: DebounceCallback, throttle: number = 1000) {
-  if (context.timeout) {
-    clearTimeout(context.timeout)
+const CTX: GlobalContext = {
+  global: { name: 'global', timer: null },
+}
+
+export type DebounceCallback = (...args: any[]) => any | Promise<any>
+
+export function debounce(callback: DebounceCallback, throttle: number = 1000, context: DebounceContext = CTX.global) {
+  if (context.timer) {
+    clearTimeout(context.timer)
   }
 
-  context.timeout = setTimeout(callback, throttle)
+  context.timer = setTimeout(() => callback(), throttle)
+}
+
+export function debouncer(callback: DebounceCallback, throttle: number = 1000) {
+  const context: DebounceContext = {
+    name: callback.name,
+    timer: null,
+  }
+
+  return (...args: any[]): any => debounce((...args: any[]) => callback(...args), throttle, context)
 }

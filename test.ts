@@ -1,5 +1,7 @@
+import './debounce/test.ts'
 import './env/test.ts'
 import './object-doc-couchdb/test.ts'
 import './object-map/test.ts'
 import './object-merge/test.ts'
 import './rest/test.ts'
+import './throttle/test.ts'
