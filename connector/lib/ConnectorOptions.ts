@@ -1,7 +1,7 @@
 import { ConnectorProtocols } from './ConnectorProtocols.ts'
 
 export interface ConnectorOptions {
-  arguments: { [key: string]: any }
+  arguments?: { [key: string]: any }
   name: string
 
   credentials?: {
