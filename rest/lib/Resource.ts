@@ -15,8 +15,8 @@ const DefaultOptions: ResourceOptions = {
 }
 
 export abstract class Resource<T extends ResourceOptions> {
-  private readonly options: ResourceOptions
-  private readonly url: URL
+  protected readonly options: T
+  protected readonly url: URL
 
   constructor(url: URL, options: Essentials.DeepPartial<T>) {
     this.options = ObjectMerge.merge<T>(DefaultOptions as Essentials.DeepPartial<T>, options)
