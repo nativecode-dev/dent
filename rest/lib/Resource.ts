@@ -14,12 +14,12 @@ const DefaultOptions: ResourceOptions = {
   ],
 }
 
-export abstract class Resource {
+export abstract class Resource<T extends ResourceOptions> {
   private readonly options: ResourceOptions
   private readonly url: URL
 
-  constructor(url: URL, options: Essentials.DeepPartial<ResourceOptions> = {}) {
-    this.options = ObjectMerge.merge<ResourceOptions>(DefaultOptions, options)
+  constructor(url: URL, options: Essentials.DeepPartial<T>) {
+    this.options = ObjectMerge.merge<T>(DefaultOptions as Essentials.DeepPartial<T>, options)
 
     if (url.href.endsWith('/')) {
       this.url = url

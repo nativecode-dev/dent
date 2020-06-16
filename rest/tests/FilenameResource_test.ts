@@ -1,4 +1,5 @@
 import { assertEquals } from '../test_deps.ts'
+
 import { FilenameResource } from './FilenameResource.ts'
 
 Deno.test('should get filename', async () => {
@@ -16,7 +17,7 @@ Deno.test('should get filename', async () => {
     type: 'movie',
   }
 
-  const resource = new FilenameResource(new URL('https://guessit.nativecode.com'))
+  const resource = new FilenameResource(new URL('https://guessit.nativecode.com'), {})
   const response = await resource.filename('Inheritance.2020.PROPER.1080p.WEBRip.x264-RARBG.mp4')
   assertEquals(response, expected)
 })
