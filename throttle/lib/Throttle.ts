@@ -16,6 +16,4 @@ const QUEUE: GlobalContext = {
   },
 }
 
-export function throttle(callbacks: ThrottleCallback[], max: number = 2, context: ThrottleContext = QUEUE.global) {
-  
-}
+export function throttle(callbacks: ThrottleCallback[], max: number = 2, context: ThrottleContext = QUEUE.global) {}

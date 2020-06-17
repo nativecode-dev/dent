@@ -53,9 +53,7 @@ export class Env {
   private paths(): string[] {
     return Object.keys(this.options.env)
       .map((envname) => envname.replace(/\_/g, '.'))
-      .filter((paths) =>
-        this.options.prefix.map((prefix) => prefix.toUpperCase()).includes(paths.split('.')[0].toUpperCase()),
-      )
+      .filter((paths) => this.options.prefix.map((prefix) => prefix.toUpperCase()).includes(paths.split('.')[0].toUpperCase()))
       .sort()
   }
 }

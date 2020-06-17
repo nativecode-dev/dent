@@ -108,9 +108,6 @@ export class Lincoln extends Subject<LincolnEnvelope> {
   }
 
   private transform(message: LincolnMessage): LincolnMessage {
-    return Array.from(this.transformers.values()).reduce<LincolnMessage>(
-      (transformed, transformer) => transformer(transformed),
-      message,
-    )
+    return Array.from(this.transformers.values()).reduce<LincolnMessage>((transformed, transformer) => transformer(transformed), message)
   }
 }

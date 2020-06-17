@@ -273,10 +273,7 @@ const makeRegex = (pattern: string, ignorecase: boolean) => {
   //   ? NEGATIVE_REPLACERS
   //   : POSITIVE_REPLACERS
 
-  const source: any = REPLACERS.reduce(
-    (prev: any, current: any) => prev.replace(current[0], current[1].bind(pattern)),
-    pattern,
-  )
+  const source: any = REPLACERS.reduce((prev: any, current: any) => prev.replace(current[0], current[1].bind(pattern)), pattern)
 
   return (regexCache[pattern] = ignorecase ? new RegExp(source, 'i') : new RegExp(source))
 }
@@ -428,10 +425,7 @@ export class Ignore {
 
     this._rules.forEach((rule: any) => {
       const { negative } = rule
-      if (
-        (unignored === negative && ignored !== unignored) ||
-        (negative && !ignored && !unignored && !checkUnignored)
-      ) {
+      if ((unignored === negative && ignored !== unignored) || (negative && !ignored && !unignored && !checkUnignored)) {
         return
       }
 

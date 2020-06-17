@@ -8,12 +8,7 @@ export { Application, ApplicationOptions, ListenOptions, Router } from 'https://
 export { exec, OutputMode } from 'https://deno.land/x/exec/mod.ts'
 export { load } from 'https://deno.land/x/js_yaml_port/js-yaml.js'
 
-export {
-  container,
-  DependencyContainer,
-  Injectable,
-  Lifecycle,
-} from 'https://deno.land/x/alosaur@v0.19.0/src/injection/index.ts'
+export { container, DependencyContainer, Injectable, Lifecycle } from 'https://deno.land/x/alosaur@v0.19.0/src/injection/index.ts'
 
 export { ObjectMap } from '../object-map/mod.ts'
 export { ObjectMerge } from '../object-merge/mod.ts'

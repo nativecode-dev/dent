@@ -51,8 +51,7 @@ export class ObjectMap {
       .trim()
       .split('.')
       .reduce<ObjectMapValue>(
-        (result, property) =>
-          result.properties.reduce((_, current) => (current.name === property ? current : _), result),
+        (result, property) => result.properties.reduce((_, current) => (current.name === property ? current : _), result),
         this.root,
       )
   }

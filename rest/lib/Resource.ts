@@ -15,6 +15,8 @@ const DefaultOptions: ResourceOptions = {
 }
 
 export abstract class Resource<T extends ResourceOptions> {
+  protected readonly encoder = new TextEncoder()
+  protected readonly decoder = new TextDecoder()
   protected readonly options: T
   protected readonly url: URL
 
@@ -68,11 +70,7 @@ export abstract class Resource<T extends ResourceOptions> {
     return btoa(value)
   }
 
-  protected async blob(
-    route: string,
-    method: string,
-    params: ResourceParams,
-  ): Promise<ArrayBuffer | SharedArrayBuffer> {
+  protected async blob(route: string, method: string, params: ResourceParams): Promise<ArrayBuffer | SharedArrayBuffer> {
     const response = await this.response(route, method, params)
     return response.arrayBuffer()
   }
@@ -90,7 +88,13 @@ export abstract class Resource<T extends ResourceOptions> {
     try {
       const headers = this.headers(params)
       const url = this.getRoute(route, params).href
-      const request: RequestInit = { headers, method, body: body ? JSON.stringify(body) : undefined }
+
+      const request: RequestInit = {
+        headers,
+        method,
+        body: body ? this.encoder.encode(JSON.stringify(body)) : undefined,
+      }
+
       const response = await fetch(url, request)
 
       if (response.ok === false) {

@@ -1,14 +1,4 @@
-import {
-  exists,
-  load,
-  path,
-  Ignore,
-  DentModule,
-  DentModuleFile,
-  DentConfig,
-  DentModuleType,
-  ObjectMerge,
-} from '../deps.ts'
+import { exists, load, path, Ignore, DentModule, DentModuleFile, DentConfig, DentModuleType, ObjectMerge } from '../deps.ts'
 
 export class DentExplorer {
   async explore(directory: string): Promise<{ config: DentConfig; module: DentModule }> {
