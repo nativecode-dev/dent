@@ -38,6 +38,12 @@ Deno.test('should clone object properties', () => {
   assertEquals(merged, { address: { address1: 'Main Street', address2: 'Suite 101' } })
 })
 
+Deno.test('should filter undefined targets', () => {
+  const targets = [{ address: { address1: 'Main Street' } }, { address: { address2: 'Suite 101' } }, undefined]
+  const merged = ObjectMerge.merge(...targets)
+  assertEquals(merged, { address: { address1: 'Main Street', address2: 'Suite 101' } })
+})
+
 Deno.test('should clone string properties', () => {
   const targets = [{ firstname: 'Mike' }, { lastname: 'Pham' }]
   const merged = ObjectMerge.merge(...targets)

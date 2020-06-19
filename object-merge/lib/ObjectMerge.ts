@@ -51,6 +51,6 @@ export namespace ObjectMerge {
   }
 
   export function mergex<T extends any>(options: ObjectMergeOptions, ...targets: Array<Essentials.DeepPartial<T>>): T {
-    return targets.reduce((target, source) => clone(source, target, options)) as T
+    return targets.filter((x) => x !== undefined).reduce((target, source) => clone(source, target, options)) as T
   }
 }
