@@ -7,8 +7,19 @@ stages:
 test:
   stage: test
   script:
-    - deno run -c tsconfig.json --allow-read --allow-write build.ts
-    - deno test -c tsconfig.json --allow-env --allow-net --allow-read --allow-write
+    - deno run --allow-env --allow-read --allow-write build.ts
+    - deno run --allow-net connector/mod_run.ts localhost --port 5672
+    - deno run --allow-net connector/mod_run.ts localhost --port 6379
+    - deno test -c tsconfig.json --allow-env --allow-read --allow-net --allow-write
+  services:
+    - couchdb:2
+    - rabbitmq:3-management-alpine
+    - redis:6-alpine
+  variables:
+    COUCHDB_USER: admin
+    COUCHDB_PASSWORD: password
+    RABBITMQ_DEFAULT_USER: admin
+    RABBITMQ_DEFAULT_PASS: password
 
 publish:
   stage: publish
