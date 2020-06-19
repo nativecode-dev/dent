@@ -31,8 +31,9 @@ export namespace ObjectMerge {
       if (Array.isArray(cloneValue) && Array.isArray(sourceValue)) {
         if (options.dedupe) {
           result[property] = [...new Set(cloneValue.concat(sourceValue))]
+        } else {
+          result[property] = [...cloneValue, ...sourceValue]
         }
-        result[property] = [...cloneValue, ...sourceValue]
       } else if (Array.isArray(sourceValue)) {
         result[property] = [...sourceValue]
       } else if (cloneType === 'object' && sourceType === 'object') {
