@@ -1,7 +1,8 @@
 import * as path from 'https://deno.land/std@0.57.0/path/mod.ts'
 
-import { Ignore } from './ignore/mod.ts'
 import { exists } from 'https://deno.land/std@0.57.0/fs/exists.ts'
+
+import { Ignore } from './ignore/mod.ts'
 
 interface Project {
   location: string
@@ -28,7 +29,7 @@ const RESERVED_FILE_NAMES = ['deps.ts', 'mod.ts', 'mod_run.ts', 'mod_test.ts', '
 const DENO_IGNORE = new Ignore()
 const DENO_IGNORE_NAME = '.denoignore'
 
-async function crawlProject(cwd: string): Promise<Project> {
+export async function crawlProject(cwd: string): Promise<Project> {
   const project: Project = {
     location: cwd,
     modules: [],
@@ -112,7 +113,7 @@ async function updateDenoIgnore(path: string, ignore: Ignore) {
   }
 }
 
-async function updateModuleFiles(module: ProjectModule): Promise<ProjectModule> {
+async function updateModuleFiles(module: ProjectModule, log: boolean): Promise<ProjectModule> {
   const codefiles = module.code
     .filter((file) => file.location.split('/').includes('lib'))
     .map((file) => {
@@ -142,19 +143,25 @@ async function updateModuleFiles(module: ProjectModule): Promise<ProjectModule> 
 
   if (codefiles.length > 0) {
     await Deno.writeTextFile(mod, codefiles.join('\n'))
+    if (log) {
+      console.log(`wrote ${mod}`)
+    }
   }
 
   if (testfiles.length > 0) {
     await Deno.writeTextFile(modtest, testfiles.join('\n'))
+    if (log) {
+      console.log(`wrote ${modtest}`)
+    }
   }
 
   return module
 }
 
-async function updateProject(project: Project) {
+export async function updateProject(project: Project, log: boolean = false) {
   for (const module of project.modules) {
     if (module.ignored === false) {
-      await updateModuleFiles(module)
+      await updateModuleFiles(module, log)
     }
   }
 
@@ -168,5 +175,3 @@ async function updateProject(project: Project) {
 
   await Deno.writeTextFile(path.join(project.location, 'test.ts'), tests.join('\n'))
 }
-
-await updateProject(await crawlProject(Deno.cwd()))
