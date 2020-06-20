@@ -1,7 +1,7 @@
 import { exists, path } from '../deps.ts'
 
-import { Project } from './Project.ts'
-import { ProjectModule } from './ProjectModule.ts'
+import { Project } from './Models/Project.ts'
+import { ProjectModule } from './Models/ProjectModule.ts'
 
 export class Updater {
   async update(project: Project, log: boolean = false) {

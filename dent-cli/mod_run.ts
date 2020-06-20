@@ -1,8 +1,8 @@
 import { parse } from 'https://deno.land/std@0.58.0/flags/mod.ts'
 
 import { ObjectMerge } from './deps.ts'
-
 import { Crawler } from './mod.ts'
+
 import { Updater } from './lib/Updater.ts'
 
 interface Command {

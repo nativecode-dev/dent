@@ -1,10 +1,10 @@
 import { Ignore, exists, path } from '../deps.ts'
 
-import { Project } from './Project.ts'
-import { ProjectFile } from './ProjectFile.ts'
-import { ProjectModule } from './ProjectModule.ts'
+import { Project } from './Models/Project.ts'
+import { ProjectFile } from './Models/ProjectFile.ts'
+import { ProjectModule } from './Models/ProjectModule.ts'
 
-const RESERVED_FILE_NAMES = ['deps.ts', 'mod.ts', 'mod_run.ts', 'mod_test.ts', 'test.ts', 'test_deps.ts']
+const RESERVED_FILE_NAMES = ['deps.ts', 'mod.ts', 'mod_run.ts', 'mod_test.ts', 'run.ts', 'test.ts', 'test_deps.ts']
 
 const DENO_IGNORE = new Ignore()
 const DENO_IGNORE_NAME = '.denoignore'
