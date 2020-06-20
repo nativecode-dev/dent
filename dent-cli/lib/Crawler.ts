@@ -10,22 +10,22 @@ const DENO_IGNORE = new Ignore()
 const DENO_IGNORE_NAME = '.denoignore'
 
 export class Crawler {
-  async crawlProject(cwd: string): Promise<Project> {
+  async crawl(cwd: string): Promise<Project> {
     const project: Project = {
       location: cwd,
       modules: [],
       name: cwd,
     }
 
-    await this.updateDenoIgnore(path.join(cwd, DENO_IGNORE_NAME), DENO_IGNORE)
+    await this.ignore(path.join(cwd, DENO_IGNORE_NAME), DENO_IGNORE)
 
     for await (const entry of Deno.readDir(cwd)) {
-      if (this.ignoreEntry(cwd, cwd, entry)) {
+      if (this.ignored(cwd, cwd, entry)) {
         continue
       }
 
       if (entry.isDirectory) {
-        const module = await this.crawlModule(path.join(cwd, entry.name))
+        const module = await this.module(path.join(cwd, entry.name))
         project.modules.push(module)
       }
     }
@@ -33,14 +33,14 @@ export class Crawler {
     return project
   }
 
-  private async crawlModule(cwd: string): Promise<ProjectModule> {
+  private async module(cwd: string): Promise<ProjectModule> {
     const projectProjectFiles = async (workdir: string) => {
       let files: ProjectFile[] = []
 
-      await this.updateDenoIgnore(path.join(workdir, DENO_IGNORE_NAME), DENO_IGNORE)
+      await this.ignore(path.join(workdir, DENO_IGNORE_NAME), DENO_IGNORE)
 
       for await (const entry of Deno.readDir(workdir)) {
-        if (this.ignoreEntry(cwd, workdir, entry)) {
+        if (this.ignored(cwd, workdir, entry)) {
           continue
         }
 
@@ -68,7 +68,18 @@ export class Crawler {
     }
   }
 
-  private ignoreEntry(cwd: string, workdir: string, entry: Deno.DirEntry): boolean {
+  private async ignore(path: string, ignore: Ignore) {
+    if (await exists(path)) {
+      const modignore = await Deno.readTextFile(path)
+
+      modignore
+        .trim()
+        .split('\n')
+        .reduce((result, current) => result.add(current), ignore)
+    }
+  }
+
+  private ignored(cwd: string, workdir: string, entry: Deno.DirEntry): boolean {
     const fullpath = path.join(workdir, entry.name)
     const ignored = DENO_IGNORE.test(path.relative(cwd, fullpath))
 
@@ -81,16 +92,5 @@ export class Crawler {
     }
 
     return false
-  }
-
-  private async updateDenoIgnore(path: string, ignore: Ignore) {
-    if (await exists(path)) {
-      const modignore = await Deno.readTextFile(path)
-
-      modignore
-        .trim()
-        .split('\n')
-        .reduce((result, current) => result.add(current), ignore)
-    }
   }
 }

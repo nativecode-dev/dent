@@ -23,9 +23,9 @@ const COMMANDS: { [key: string]: Command } = {
   },
   refresh: async (args) => {
     const crawler = new Crawler()
-    const project = await crawler.crawlProject(args.cwd)
+    const project = await crawler.crawl(args.cwd)
     const updater = new Updater()
-    await updater.updateProject(project, args.log)
+    await updater.update(project, args.log)
   },
 }
 

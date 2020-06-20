@@ -4,10 +4,10 @@ import { Project } from './Project.ts'
 import { ProjectModule } from './ProjectModule.ts'
 
 export class Updater {
-  async updateProject(project: Project, log: boolean = false) {
+  async update(project: Project, log: boolean = false) {
     for (const module of project.modules) {
       if (module.ignored === false) {
-        await this.updateModuleFiles(module, log)
+        await this.files(module, log)
       }
     }
 
@@ -22,7 +22,7 @@ export class Updater {
     await Deno.writeTextFile(path.join(project.location, 'test.ts'), tests.join('\n'))
   }
 
-  private async updateModuleFiles(module: ProjectModule, log: boolean): Promise<ProjectModule> {
+  private async files(module: ProjectModule, log: boolean): Promise<ProjectModule> {
     const codefiles = module.code
       .filter((file) => file.location.split('/').includes('lib'))
       .map((file) => {
