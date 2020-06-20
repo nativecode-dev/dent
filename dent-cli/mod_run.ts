@@ -12,6 +12,7 @@ interface Command {
 interface ProgramArgs {
   _: string[]
   cwd: string
+  debug: boolean
   log: boolean
 }
 
@@ -23,7 +24,7 @@ const COMMANDS: { [key: string]: Command } = {
   },
   refresh: async (args) => {
     const crawler = new Crawler()
-    const project = await crawler.crawl(args.cwd)
+    const project = await crawler.crawl(args.cwd, args.debug)
     const updater = new Updater()
     await updater.update(project, args.log)
   },

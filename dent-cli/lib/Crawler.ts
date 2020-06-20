@@ -10,7 +10,7 @@ const DENO_IGNORE = new Ignore()
 const DENO_IGNORE_NAME = '.denoignore'
 
 export class Crawler {
-  async crawl(cwd: string): Promise<Project> {
+  async crawl(cwd: string, debug: boolean): Promise<Project> {
     const project: Project = {
       location: cwd,
       modules: [],
@@ -28,6 +28,10 @@ export class Crawler {
         const module = await this.module(path.join(cwd, entry.name))
         project.modules.push(module)
       }
+    }
+
+    if (debug) {
+      console.log(JSON.stringify(project, null, 2))
     }
 
     return project
