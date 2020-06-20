@@ -7,9 +7,9 @@ stages:
 test:
   stage: test
   script:
-    - deno run --allow-env --allow-read --allow-write --unstable mod_run.ts refresh --log
     - deno run --allow-net connector/mod_run.ts localhost --port 5672
     - deno run --allow-net connector/mod_run.ts localhost --port 6379
+    - deno run --allow-env --allow-read --allow-write --unstable dent-cli/mod_run.ts refresh --log
     - deno test -c tsconfig.json --allow-env --allow-read --allow-net --allow-write
   services:
     - couchdb:2
