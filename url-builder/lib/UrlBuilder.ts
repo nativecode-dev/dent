@@ -127,6 +127,10 @@ export class UrlBuilder {
     return this
   }
 
+  toURL(): URL {
+    return new URL(this.toUrl())
+  }
+
   toUrl(): string {
     return this.toUrlParts().join('')
   }
