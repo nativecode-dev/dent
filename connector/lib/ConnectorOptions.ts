@@ -11,6 +11,7 @@ export interface ConnectorOptions {
 
   endpoint: {
     host: string
+    path?: string
     port?: number
     protocol?: ConnectorProtocols
   }
