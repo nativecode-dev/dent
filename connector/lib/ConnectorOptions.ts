@@ -1,5 +1,3 @@
-import { ConnectorProtocols } from './ConnectorProtocols.ts'
-
 export interface ConnectorOptions {
   arguments?: { [key: string]: any }
   name: string
@@ -13,6 +11,7 @@ export interface ConnectorOptions {
     host: string
     path?: string
     port?: number
-    protocol?: ConnectorProtocols
+    protocol?: string
+    query?: { [key: string]: string }
   }
 }

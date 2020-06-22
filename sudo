@@ -1,0 +1,1 @@
+deb http://apt.insync.io/\[DISTRIBUTION\] [CODENAME] non-free contrib /etc/apt/sources.list.d/insync.list

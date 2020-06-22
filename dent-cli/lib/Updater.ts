@@ -1,13 +1,23 @@
-import { exists, path } from '../deps.ts'
+import { Lincoln, exists, path } from '../deps.ts'
 
 import { Project } from './Models/Project.ts'
 import { ProjectModule } from './Models/ProjectModule.ts'
 
+export interface UpdaterOptions {}
+
 export class Updater {
-  async update(project: Project, log: boolean = false) {
+  private readonly options: UpdaterOptions
+  private readonly log: Lincoln
+
+  constructor(logger: Lincoln, options: UpdaterOptions) {
+    this.log = logger.extend('updater')
+    this.options = options
+  }
+
+  async update(project: Project) {
     for (const module of project.modules) {
       if (module.ignored === false) {
-        await this.files(module, log)
+        await this.files(module)
       }
     }
 
@@ -22,7 +32,7 @@ export class Updater {
     await Deno.writeTextFile(path.join(project.location, 'test.ts'), tests.join('\n'))
   }
 
-  private async files(module: ProjectModule, log: boolean): Promise<ProjectModule> {
+  private async files(module: ProjectModule): Promise<ProjectModule> {
     const codefiles = module.code
       .filter((file) => file.location.split('/').includes('lib'))
       .map((file) => {
@@ -30,6 +40,16 @@ export class Updater {
         return `export * from './${filename}'`
       })
       .sort()
+
+    const modfiles = module.files
+      .filter((file) => file.name === 'mod.ts')
+      .map((file) => {
+        const filename = path.relative(module.location, path.join(file.location, file.name))
+        return `export * from './${filename}'`
+      })
+      .sort()
+
+    this.log.debug(module.location, modfiles)
 
     const testfiles = module.code
       .filter((file) => file.location.split('/').includes('tests'))
@@ -52,16 +72,12 @@ export class Updater {
 
     if (codefiles.length > 0) {
       await Deno.writeTextFile(mod, codefiles.join('\n'))
-      if (log) {
-        console.log(`wrote ${mod}`)
-      }
+      this.log.debug(`wrote ${mod}`)
     }
 
     if (testfiles.length > 0) {
       await Deno.writeTextFile(modtest, testfiles.join('\n'))
-      if (log) {
-        console.log(`wrote ${modtest}`)
-      }
+      this.log.debug(`wrote ${modtest}`)
     }
 
     return module

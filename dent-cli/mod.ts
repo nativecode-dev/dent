@@ -1,4 +1,5 @@
 export * from './lib/Crawler.ts'
+export * from './lib/CrawlerV2.ts'
 export * from './lib/Models/Project.ts'
 export * from './lib/Models/ProjectCodeFile.ts'
 export * from './lib/Models/ProjectFile.ts'

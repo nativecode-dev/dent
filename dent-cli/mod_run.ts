@@ -1,6 +1,6 @@
 import { parse } from 'https://deno.land/std@0.58.0/flags/mod.ts'
 
-import { ObjectMerge } from './deps.ts'
+import { Lincoln, LincolnLogDebug, ObjectMerge, createLogger, createScrubTransformer } from './deps.ts'
 import { Crawler } from './mod.ts'
 
 import { Updater } from './lib/Updater.ts'
@@ -16,17 +16,25 @@ interface ProgramArgs {
   log: boolean
 }
 
+const logger: Lincoln = createLogger('dent')
+logger.interceptors([createScrubTransformer(['password'])])
+new LincolnLogDebug(logger)
+
 const args: ProgramArgs = ObjectMerge.merge<ProgramArgs>({ cwd: Deno.cwd() }, parse(Deno.args) as ProgramArgs)
+
+logger.debug(args)
 
 const COMMANDS: { [key: string]: Command } = {
   compile: async (args) => {
+    logger.debug('compile')
     Deno.compile(args.cwd)
   },
   refresh: async (args) => {
-    const crawler = new Crawler()
-    const project = await crawler.crawl(args.cwd, args.debug)
-    const updater = new Updater()
-    await updater.update(project, args.log)
+    logger.debug('refresh')
+    const crawler = new Crawler(logger, {})
+    const project = await crawler.crawl(args.cwd)
+    const updater = new Updater(logger, {})
+    await updater.update(project)
   },
 }
 

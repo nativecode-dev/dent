@@ -1,4 +1,4 @@
-import { Ignore, exists, path } from '../deps.ts'
+import { Ignore, Lincoln, exists, path } from '../deps.ts'
 
 import { Project } from './Models/Project.ts'
 import { ProjectFile } from './Models/ProjectFile.ts'
@@ -9,8 +9,18 @@ const RESERVED_FILE_NAMES = ['deps.ts', 'mod.ts', 'mod_run.ts', 'mod_test.ts', '
 const DENO_IGNORE = new Ignore()
 const DENO_IGNORE_NAME = '.denoignore'
 
+export interface CrawlerOptions {}
+
 export class Crawler {
-  async crawl(cwd: string, debug: boolean): Promise<Project> {
+  private readonly options: CrawlerOptions
+  private readonly log: Lincoln
+
+  constructor(logger: Lincoln, options: CrawlerOptions) {
+    this.log = logger.extend('crawler')
+    this.options = options
+  }
+
+  async crawl(cwd: string): Promise<Project> {
     const project: Project = {
       location: cwd,
       modules: [],
@@ -25,14 +35,13 @@ export class Crawler {
       }
 
       if (entry.isDirectory) {
-        const module = await this.module(path.join(cwd, entry.name))
+        const modpath = path.join(cwd, entry.name)
+        const module = await this.module(modpath)
         project.modules.push(module)
       }
     }
 
-    if (debug) {
-      console.log(JSON.stringify(project, null, 2))
-    }
+    this.log.trace(JSON.stringify(project, null, 2))
 
     return project
   }
@@ -45,16 +54,20 @@ export class Crawler {
 
       for await (const entry of Deno.readDir(workdir)) {
         if (this.ignored(cwd, workdir, entry)) {
+          this.log.trace('ignored', workdir, entry.name)
           continue
         }
 
         if (entry.isDirectory) {
-          const children = await projectProjectFiles(path.join(workdir, entry.name))
+          const modir = path.join(workdir, entry.name)
+          const children = await projectProjectFiles(modir)
           files = [...files, ...children]
+          this.log.trace('directory', workdir, entry.name)
         }
 
         if (entry.name.endsWith('.ts')) {
           files.push({ ...entry, location: workdir })
+          this.log.trace('code', workdir, entry.name)
         }
       }
 
