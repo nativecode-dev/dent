@@ -14,7 +14,7 @@ function parseConnectorOptions(url: string): ConnectorOptions {
   const firstDoubleSlash = builder.indexOf('//') + 2
   const firstSlash = builder.indexOf('/', firstDoubleSlash) > -1 ? builder.indexOf('/', firstDoubleSlash) : url.length
 
-  const protocol = builder.slice(0, firstColon)
+  const protocol = firstColon > -1 ? builder.slice(0, firstColon + 1) : 'https:'
 
   const [auth, hostpart] = builder.slice(firstDoubleSlash, firstSlash).split('@')
   const [host, port] = builder.slice(firstAt > 0 ? firstAt : firstDoubleSlash, firstSlash).split(':')
@@ -51,19 +51,50 @@ function queryFromString(query: string | undefined): { [key: string]: string } |
   return undefined
 }
 
+interface BuilderOptions {
+  authenticated: boolean
+  includePort: boolean
+  trailingSlash: boolean
+}
+
 export class UrlBuilder {
+  private readonly builder: BuilderOptions = {
+    authenticated: false,
+    includePort: false,
+    trailingSlash: false,
+  }
+
   constructor(private readonly options: ConnectorOptions) {}
 
   static parse(url: string): UrlBuilder {
     return new UrlBuilder(parseConnectorOptions(url))
   }
 
-  toUrl(authenticated: boolean = false, trailingSlash: boolean = false): string {
+  withAuthentication() {
+    this.builder.authenticated = true
+    return this
+  }
+
+  withPort() {
+    this.builder.includePort = true
+    return this
+  }
+
+  withTralingSlash() {
+    this.builder.trailingSlash = true
+    return this
+  }
+
+  toUrl(): string {
+    return this.toUrlParts().join('')
+  }
+
+  toUrlParts(): string[] {
     const url = []
 
-    url.push(this.options.endpoint.protocol || 'http', '://')
+    url.push(this.options.endpoint.protocol || 'https:', '//')
 
-    if (authenticated && this.options.credentials) {
+    if (this.builder.authenticated && this.options.credentials) {
       const { password, username } = this.options.credentials
       const auth = password ? `${username}:${password}` : username
       url.push(auth)
@@ -72,8 +103,9 @@ export class UrlBuilder {
 
     url.push(this.options.endpoint.host || 'localhost')
 
-    if (this.options.endpoint.port) {
-      url.push(':' + this.options.endpoint.port)
+    if (this.builder.includePort) {
+      url.push(':')
+      url.push((this.options.endpoint.port || (this.options.endpoint.protocol === 'https:' ? 443 : 80)).toString())
     }
 
     url.push('/')
@@ -82,7 +114,7 @@ export class UrlBuilder {
       url.push(normalize(this.options.endpoint.path))
     }
 
-    if (trailingSlash) {
+    if (this.builder.trailingSlash) {
       url.push('/')
     }
 
@@ -97,6 +129,6 @@ export class UrlBuilder {
       }
     }
 
-    return url.join('')
+    return url
   }
 }
