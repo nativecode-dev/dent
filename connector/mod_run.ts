@@ -1,6 +1,11 @@
-import { parse } from 'https://deno.land/std@0.57.0/flags/mod.ts'
+import { parse } from 'https://deno.land/std@0.58.0/flags/mod.ts'
 
-const args = parse(Deno.args)
+interface ProgramArgs {
+  _: string[]
+  port: number
+}
+
+const args: ProgramArgs = parse(Deno.args) as ProgramArgs
 
 const host = args._.reduce<string>((result, current) => {
   if (typeof current === 'string') {
@@ -10,7 +15,7 @@ const host = args._.reduce<string>((result, current) => {
   return result
 }, 'localhost')
 
-async function tryConnect(hostname: string, port: number) {
+async function tryConnect(hostname: string, port: number = 80) {
   try {
     await Deno.connect({ hostname, port })
     console.log(`connected to ${hostname} on ${port}`)

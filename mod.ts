@@ -14,6 +14,7 @@ export * from './object-map/mod.ts'
 export * from './object-merge/mod.ts'
 export * from './queue/mod.ts'
 export * from './rest/mod.ts'
+export * from './status-check/mod.ts'
 export * from './url-builder/mod.ts'
 
 export { Essentials } from './ts-types/mod.ts'

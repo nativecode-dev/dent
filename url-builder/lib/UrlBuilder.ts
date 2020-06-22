@@ -15,7 +15,7 @@ function normalizePathString(value: string): string {
     .join('/')
 }
 
-function normalizePortNumber(value: number | string | undefined): number {
+function normalizePortNumber(protocol: string, value: number | string | undefined): number {
   if (typeof value === 'number') {
     return value
   }
@@ -24,19 +24,27 @@ function normalizePortNumber(value: number | string | undefined): number {
     return parseInt(value, 0)
   }
 
+  if (protocol === 'http:') {
+    return 80
+  }
+
+  if (protocol === 'https:') {
+    return 443
+  }
+
   return 443
 }
 
-function normalizePortString(value: number | string | undefined): string {
-  return normalizePortNumber(value).toString()
+function normalizePortString(protocol: string, value: number | string | undefined): string {
+  return normalizePortNumber(protocol, value).toString()
 }
 
 function normalizeProtocolString(value: string | undefined): string {
-  if (value) {
-    if (value.endsWith(':')) {
-      return value
-    }
+  if (value && value.endsWith(':')) {
+    return value
+  }
 
+  if (value) {
     return `${value}:`
   }
 
@@ -78,7 +86,7 @@ function parseConnectorOptions(url: string): ConnectorOptions {
     endpoint: {
       host: normalizeHostString(host),
       path: normalizePathString(path),
-      port: normalizePortNumber(port),
+      port: normalizePortNumber(normalizeProtocolString(protocol), port),
       protocol: normalizeProtocolString(protocol),
       query: normalizeQueryString(query),
     },
@@ -151,8 +159,9 @@ export class UrlBuilder {
     url.push(normalizeHostString(this.options.endpoint.host))
 
     if (this.builder.includePort) {
+      const protocol = normalizeProtocolString(this.options.endpoint.protocol)
       url.push(':')
-      url.push(normalizePortString(this.options.endpoint.port))
+      url.push(normalizePortString(protocol, this.options.endpoint.port))
     }
 
     url.push('/')
