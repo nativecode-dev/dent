@@ -117,7 +117,7 @@ export abstract class Resource<T extends ResourceOptions> {
     return response.text()
   }
 
-  private getRoute(route: string, params: ResourceParams = []): URL {
+  protected getRoute(route: string, params: ResourceParams = []): URL {
     const routeUrl = params
       .filter((param) => param.type === ResourceParamType.RouteParameter)
       .reduce((result, param) => {
@@ -139,7 +139,7 @@ export abstract class Resource<T extends ResourceOptions> {
     return url
   }
 
-  private getUrl(route: string): string {
+  protected getUrl(route: string): string {
     if (route.startsWith('http')) {
       return route
     }
