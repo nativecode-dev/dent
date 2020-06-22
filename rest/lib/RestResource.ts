@@ -18,6 +18,6 @@ const DefaultResourceOptions: Essentials.DeepPartial<ResourceOptions> = {
 
 export abstract class RestResource<T extends ResourceOptions> extends Resource<T> {
   constructor(url: URL, options: Essentials.DeepPartial<T>) {
-    super(url, ObjectMerge.merge<T>(DefaultResourceOptions as Essentials.DeepPartial<T>, options) as Essentials.DeepPartial<T>)
+    super(url, ObjectMerge.merge<T>({ ...DefaultResourceOptions } as Essentials.DeepPartial<T>, options) as Essentials.DeepPartial<T>)
   }
 }
