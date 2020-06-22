@@ -21,7 +21,7 @@ export abstract class Resource<T extends ResourceOptions> {
   protected readonly url: URL
 
   constructor(url: URL, options: Essentials.DeepPartial<T>) {
-    this.options = ObjectMerge.merge<T>(DefaultOptions as Essentials.DeepPartial<T>, options)
+    this.options = ObjectMerge.merge<T>({ ...DefaultOptions } as Essentials.DeepPartial<T>, options)
 
     if (url.href.endsWith('/')) {
       this.url = url
@@ -92,7 +92,7 @@ export abstract class Resource<T extends ResourceOptions> {
       const request: RequestInit = {
         headers,
         method,
-        body: body ? this.encoder.encode(JSON.stringify(body)) : undefined,
+        body: body ? JSON.stringify(body) : undefined,
       }
 
       const response = await fetch(url, request)
