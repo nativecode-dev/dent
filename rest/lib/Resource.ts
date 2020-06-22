@@ -1,11 +1,11 @@
-import { Essentials, ObjectMerge } from '../deps.ts'
+import { Essentials, ObjectMerge, UrlBuilder } from '../deps.ts'
 
 import { HttpError } from './HttpError.ts'
 import { ResourceParams } from './ResourceParam.ts'
 import { ResourceOptions } from './ResourceOptions.ts'
 import { ResourceParamType } from './ResourceParamType.ts'
 
-const DefaultOptions: ResourceOptions = {
+const DefaultOptions: Essentials.DeepPartial<ResourceOptions> = {
   headers: [
     {
       name: 'User-Agent',
@@ -20,18 +20,17 @@ export abstract class Resource<T extends ResourceOptions> {
   protected readonly options: T
   protected readonly url: URL
 
-  constructor(url: URL, options: Essentials.DeepPartial<T>) {
+  constructor(options: Essentials.DeepPartial<T>) {
     this.options = ObjectMerge.merge<T>({ ...DefaultOptions } as Essentials.DeepPartial<T>, options)
-
-    if (url.href.endsWith('/')) {
-      this.url = url
-    } else {
-      this.url = new URL(`${url.href}/`)
-    }
+    this.url = this.createUrl()
   }
 
   public get base(): URL {
     return this.url
+  }
+
+  protected createUrl(): URL {
+    return new UrlBuilder(this.options.connection).toURL()
   }
 
   protected async http_get<T>(route: string, ...params: ResourceParams): Promise<T> {

@@ -17,7 +17,7 @@ Deno.test('should get filename', async () => {
     type: 'movie',
   }
 
-  const resource = new FilenameResource(new URL('https://guessit.nativecode.com'), {})
+  const resource = new FilenameResource({ connection: { endpoint: { host: 'guessit.nativecode.com' } } })
   const response = await resource.filename('Inheritance.2020.PROPER.1080p.WEBRip.x264-RARBG.mp4')
   assertEquals(response, expected)
 })
