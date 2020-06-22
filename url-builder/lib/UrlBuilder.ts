@@ -1,10 +1,64 @@
 import { ConnectorOptions } from '../deps.ts'
 
-function normalize(value: string): string {
+function normalizeHostString(value: string | undefined): string {
+  if (value) {
+    return value
+  }
+
+  return 'localhost'
+}
+
+function normalizePathString(value: string): string {
   return value
     .split('/')
     .reduce<string[]>((result, current) => (current !== '' ? [...result, current] : result), [])
     .join('/')
+}
+
+function normalizePortNumber(value: number | string | undefined): number {
+  if (typeof value === 'number') {
+    return value
+  }
+
+  if (typeof value === 'string') {
+    return parseInt(value, 0)
+  }
+
+  return 443
+}
+
+function normalizePortString(value: number | string | undefined): string {
+  return normalizePortNumber(value).toString()
+}
+
+function normalizeProtocolString(value: string | undefined): string {
+  if (value) {
+    if (value.endsWith(':')) {
+      return value
+    }
+
+    return `${value}:`
+  }
+
+  return 'https:'
+}
+
+function normalizeQueryObject(value: any): string[] {
+  return Object.keys(value)
+    .map((key) => ({ key, value: value![key] }))
+    .map((keyvalue) => `${keyvalue.key}=${keyvalue.value}`)
+}
+
+function normalizeQueryString(query: string | undefined): { [key: string]: string } | undefined {
+  if (query) {
+    return query.split('&').reduce<any>((result, current) => {
+      const [name, value] = current.split('=')
+      result[name] = value
+      return result
+    }, {})
+  }
+
+  return undefined
 }
 
 function parseConnectorOptions(url: string): ConnectorOptions {
@@ -22,11 +76,11 @@ function parseConnectorOptions(url: string): ConnectorOptions {
 
   const options: ConnectorOptions = {
     endpoint: {
-      host,
-      path,
-      port: parseInt(port, 0),
-      protocol,
-      query: queryFromString(query),
+      host: normalizeHostString(host),
+      path: normalizePathString(path),
+      port: normalizePortNumber(port),
+      protocol: normalizeProtocolString(protocol),
+      query: normalizeQueryString(query),
     },
     name: 'test',
   }
@@ -37,18 +91,6 @@ function parseConnectorOptions(url: string): ConnectorOptions {
   }
 
   return options
-}
-
-function queryFromString(query: string | undefined): { [key: string]: string } | undefined {
-  if (query) {
-    return query.split('&').reduce<any>((result, current) => {
-      const [name, value] = current.split('=')
-      result[name] = value
-      return result
-    }, {})
-  }
-
-  return undefined
 }
 
 interface BuilderOptions {
@@ -92,7 +134,8 @@ export class UrlBuilder {
   toUrlParts(): string[] {
     const url = []
 
-    url.push(this.options.endpoint.protocol || 'https:', '//')
+    const protocol = normalizeProtocolString(this.options.endpoint.protocol)
+    url.push(protocol, '//')
 
     if (this.builder.authenticated && this.options.credentials) {
       const { password, username } = this.options.credentials
@@ -101,17 +144,17 @@ export class UrlBuilder {
       url.push('@')
     }
 
-    url.push(this.options.endpoint.host || 'localhost')
+    url.push(normalizeHostString(this.options.endpoint.host))
 
     if (this.builder.includePort) {
       url.push(':')
-      url.push((this.options.endpoint.port || (this.options.endpoint.protocol === 'https:' ? 443 : 80)).toString())
+      url.push(normalizePortString(this.options.endpoint.port))
     }
 
     url.push('/')
 
     if (this.options.endpoint.path) {
-      url.push(normalize(this.options.endpoint.path))
+      url.push(normalizePathString(this.options.endpoint.path))
     }
 
     if (this.builder.trailingSlash) {
@@ -119,9 +162,7 @@ export class UrlBuilder {
     }
 
     if (this.options.endpoint.query) {
-      const query = Object.keys(this.options.endpoint.query)
-        .map((key) => ({ key, value: this.options.endpoint.query![key] }))
-        .map((keyvalue) => `${keyvalue.key}=${keyvalue.value}`)
+      const query = normalizeQueryObject(this.options.endpoint.query)
 
       if (query.length > 0) {
         url.push('?')

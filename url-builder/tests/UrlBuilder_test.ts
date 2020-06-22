@@ -1,6 +1,42 @@
+import { ConnectorOptions } from '../deps.ts'
 import { assertEquals } from '../test_deps.ts'
 
 import { UrlBuilder } from '../lib/UrlBuilder.ts'
+
+const CONNECTION: ConnectorOptions = {
+  credentials: {
+    password: 'g0ds3xl0v3',
+    username: 'admin',
+  },
+  endpoint: {
+    host: 'localhost',
+    path: '/',
+    port: 443,
+    protocol: 'https',
+    query: {},
+  },
+  name: 'test',
+}
+
+Deno.test('should get url from connection options', () => {
+  const builder = new UrlBuilder(CONNECTION)
+  assertEquals(builder.toUrl(), 'https://localhost/')
+})
+
+Deno.test('should get url from connection options, with port', () => {
+  const builder = new UrlBuilder(CONNECTION)
+  assertEquals(builder.withPort().toUrl(), 'https://localhost:443/')
+})
+
+Deno.test('should get url from connection options, with authentication', () => {
+  const builder = new UrlBuilder(CONNECTION)
+  assertEquals(builder.withAuthentication().toUrl(), 'https://admin:g0ds3xl0v3@localhost/')
+})
+
+Deno.test('should get url from connection options, with authentication and port', () => {
+  const builder = new UrlBuilder(CONNECTION)
+  assertEquals(builder.withAuthentication().withPort().toUrl(), 'https://admin:g0ds3xl0v3@localhost:443/')
+})
 
 Deno.test('should parse url', () => {
   const builder = UrlBuilder.parse('http://localhost')
