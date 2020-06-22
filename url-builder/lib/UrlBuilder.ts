@@ -1,15 +1,42 @@
-import { ConnectorOptions } from '../../connector/mod.ts'
+import { ConnectorOptions } from '../deps.ts'
 
 function normalize(value: string): string {
-  if (value.startsWith('/') && value.endsWith('/')) {
-    return value.slice(0, value.length - 1)
-  }
-
-  if (value.startsWith('/') === false && value.endsWith('/')) {
-    return `/${value}`.slice(0, value.length)
-  }
-
   return value
+    .split('/')
+    .reduce<string[]>((result, current) => (current !== '' ? [...result, current] : result), [])
+    .join('/')
+}
+
+function parseConnectorOptions(url: string): ConnectorOptions {
+  const builder = url
+  const firstAt = builder.indexOf('@') + 1
+  const firstColon = builder.indexOf(':')
+  const firstDoubleSlash = builder.indexOf('//') + 2
+  const firstSlash = builder.indexOf('/', firstDoubleSlash) > -1 ? builder.indexOf('/', firstDoubleSlash) : url.length
+
+  const protocol = builder.slice(0, firstColon)
+
+  const [auth, hostpart] = builder.slice(firstDoubleSlash, firstSlash).split('@')
+  const [host, port] = builder.slice(firstAt > 0 ? firstAt : firstDoubleSlash, firstSlash).split(':')
+  const [path, query] = builder.slice(firstSlash).split('?')
+
+  const options: ConnectorOptions = {
+    endpoint: {
+      host,
+      path,
+      port: parseInt(port, 0),
+      protocol,
+      query: queryFromString(query),
+    },
+    name: 'test',
+  }
+
+  if (auth && hostpart) {
+    const [username, password] = auth.split(':')
+    options.credentials = { username, password }
+  }
+
+  return options
 }
 
 function queryFromString(query: string | undefined): { [key: string]: string } | undefined {
@@ -28,55 +55,35 @@ export class UrlBuilder {
   constructor(private readonly options: ConnectorOptions) {}
 
   static parse(url: string): UrlBuilder {
-    const firstColon = url.indexOf(':')
-    const firstDoubleSlash = url.indexOf('//') + 2
-    const firstSlash = url.indexOf('/', firstDoubleSlash)
-    const firstAt = url.indexOf('@')
-
-    const [auth, hostpart] = url.slice(firstDoubleSlash, firstSlash).split('@')
-    const [host, port] = url.slice(firstAt > -1 ? firstAt + 1 : firstDoubleSlash, firstSlash).split(':')
-    const [path, query] = url.slice(firstSlash).split('?')
-    const protocol = url.slice(0, firstColon)
-
-    const options: ConnectorOptions = {
-      endpoint: {
-        host,
-        path,
-        port: parseInt(port, 0),
-        protocol,
-        query: queryFromString(query),
-      },
-      name: 'test',
-    }
-
-    if (auth && hostpart) {
-      const [username, password] = auth.split(':')
-      options.credentials = { username, password }
-    }
-
-    return new UrlBuilder(options)
+    return new UrlBuilder(parseConnectorOptions(url))
   }
 
-  build(authenticated: boolean = false): string {
-    const urlparts = []
+  toUrl(authenticated: boolean = false, trailingSlash: boolean = false): string {
+    const url = []
 
-    urlparts.push(this.options.endpoint.protocol || 'http', '://')
+    url.push(this.options.endpoint.protocol || 'http', '://')
 
     if (authenticated && this.options.credentials) {
-      const username = this.options.credentials.username
-      const password = this.options.credentials.password
-      const auth = `${username}:${password}@`
-      urlparts.push(auth)
+      const { password, username } = this.options.credentials
+      const auth = password ? `${username}:${password}` : username
+      url.push(auth)
+      url.push('@')
     }
 
-    urlparts.push(this.options.endpoint.host || 'localhost')
+    url.push(this.options.endpoint.host || 'localhost')
 
     if (this.options.endpoint.port) {
-      urlparts.push(':' + this.options.endpoint.port)
+      url.push(':' + this.options.endpoint.port)
     }
 
+    url.push('/')
+
     if (this.options.endpoint.path) {
-      urlparts.push(normalize(this.options.endpoint.path))
+      url.push(normalize(this.options.endpoint.path))
+    }
+
+    if (trailingSlash) {
+      url.push('/')
     }
 
     if (this.options.endpoint.query) {
@@ -84,9 +91,12 @@ export class UrlBuilder {
         .map((key) => ({ key, value: this.options.endpoint.query![key] }))
         .map((keyvalue) => `${keyvalue.key}=${keyvalue.value}`)
 
-      urlparts.push('?' + query.join('&'))
+      if (query.length > 0) {
+        url.push('?')
+        url.push(query.join('&'))
+      }
     }
 
-    return urlparts.join('')
+    return url.join('')
   }
 }
