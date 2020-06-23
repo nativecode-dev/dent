@@ -22,23 +22,23 @@ export namespace ObjectMerge {
     }
 
     return Object.keys(source).reduce<any>((result, property) => {
-      const cloneValue = result[property]
       const sourceValue = source[property]
+      const targetValue = result[property]
 
-      const cloneType = typeof cloneValue
       const sourceType = typeof sourceValue
+      const targetType = typeof targetValue
 
-      if (Array.isArray(cloneValue) && Array.isArray(sourceValue)) {
+      if (Array.isArray(sourceValue) && Array.isArray(targetValue)) {
         if (options.dedupe) {
-          result[property] = [...new Set(cloneValue.concat(sourceValue))]
+          result[property] = [...new Set(targetValue.concat(sourceValue))]
         } else {
-          result[property] = [...cloneValue, ...sourceValue]
+          result[property] = [...targetValue, ...sourceValue]
         }
       } else if (Array.isArray(sourceValue)) {
         result[property] = [...sourceValue]
-      } else if (cloneType === 'object' && sourceType === 'object') {
-        result[property] = clone({ ...sourceValue }, { ...cloneValue }, options)
-      } else if (sourceValue !== cloneValue) {
+      } else if (sourceType === 'object' && targetType === 'object') {
+        result[property] = { ...clone({ ...sourceValue }, { ...targetValue }, options) }
+      } else if (sourceValue !== targetValue) {
         result[property] = sourceValue
       }
 
