@@ -20,7 +20,7 @@ export class PublisherFactory<T> {
     this.connection = undefined
   }
 
-  async create(): Promise<Publisher<T>> {
+  async create(): Promise<IPublisher<T>> {
     this.connection = await connect({
       hostname: this.coptions.endpoint.host,
       password: this.coptions.credentials?.password,
@@ -36,7 +36,11 @@ export class PublisherFactory<T> {
   }
 }
 
-class Publisher<T> {
+export interface IPublisher<T> {
+  send(message: T): Promise<Envelope<T>>
+}
+
+class Publisher<T> implements IPublisher<T> {
   private readonly encoder = new TextEncoder()
 
   constructor(private readonly options: QueueOptions, private readonly channel: AmqpChannel, queue: QueueDeclareOk) {}

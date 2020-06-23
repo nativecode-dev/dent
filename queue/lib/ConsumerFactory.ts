@@ -17,7 +17,7 @@ export class ConsumerFactory<T> {
     this.connection = undefined
   }
 
-  async create() {
+  async create(): Promise<IConsumer<T>> {
     this.connection = await connect({
       hostname: this.coptions.endpoint.host,
       password: this.coptions.credentials?.password,
@@ -31,7 +31,13 @@ export class ConsumerFactory<T> {
   }
 }
 
-class Consumer<T> {
+export interface IConsumer<T> {
+  ack(envelope: EnvelopeQueue<T>): Promise<void>
+  consume(): Promise<EnvelopeQueue<T>>
+  nack(envelop: EnvelopeQueue<T>, requeue: boolean): Promise<void>
+}
+
+class Consumer<T> implements IConsumer<T> {
   private readonly decoder: TextDecoder = new TextDecoder()
 
   constructor(private readonly channel: AmqpChannel, private readonly options: QueueOptions, private readonly queue: QueueDeclareOk) {}
