@@ -106,30 +106,24 @@ export abstract class Resource<T extends ResourceOptions> {
   }
 
   protected getRoute(route: string, params: ResourceParams = []): URL {
+    const builder = new UrlBuilder(this.options.connection)
+
     const routeUrl = params
       .filter((param) => param.type === ResourceParamType.RouteParameter)
       .reduce((result, param) => {
         const regex = new RegExp(`{:${param.key}}`)
         return result.replace(regex, param.value)
-      }, this.getUrl(route))
+      }, route)
 
-    const url = new URL(routeUrl)
-
-    url.search = params
+    const query = params
       .filter((param) => param.type === ResourceParamType.Query)
       .filter((param) => param.value)
-      .reduce<string[]>((result, param) => {
-        result.push(`${param.key}=${param.value}`)
-        return result
-      }, [])
-      .join('&')
+      .reduce<any>((obj, param) => {
+        obj[param.key] = param.value
+        return obj
+      }, {})
 
-    return url
-  }
-
-  protected getUrl(route: string): string {
-    const builder = new UrlBuilder(this.options.connection)
-    return builder.withPath(route).withPort().toUrl()
+    return builder.withPath(routeUrl).withQuery(query).toURL()
   }
 
   private headers(params: ResourceParams = []): Headers {
