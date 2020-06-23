@@ -1,4 +1,4 @@
-import { Essentials, ObjectMerge, UrlBuilder } from '../deps.ts'
+import { ConnectorOptions, Essentials, ObjectMerge, UrlBuilder } from '../deps.ts'
 
 import { HttpError } from './HttpError.ts'
 import { ResourceParams } from './ResourceParam.ts'
@@ -106,7 +106,18 @@ export abstract class Resource<T extends ResourceOptions> {
   }
 
   protected getRoute(route: string, params: ResourceParams = []): URL {
-    const builder = new UrlBuilder(ObjectMerge.merge(this.options.connection))
+    const builder = new UrlBuilder({
+      arguments: this.options.connection.arguments,
+      credentials: this.options.connection.credentials,
+      endpoint: {
+        host: this.options.connection.endpoint.host,
+        path: this.options.connection.endpoint.path,
+        port: this.options.connection.endpoint.port,
+        protocol: this.options.connection.endpoint.protocol,
+        query: this.options.connection.endpoint.query,
+      },
+      name: this.options.connection.name,
+    })
 
     const routeUrl = params
       .filter((param) => param.type === ResourceParamType.RouteParameter)

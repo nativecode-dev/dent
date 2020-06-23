@@ -117,7 +117,7 @@ export class UrlBuilder {
   private readonly options: ConnectorOptions
 
   constructor(options: Essentials.DeepPartial<ConnectorOptions>) {
-    this.options = ObjectMerge.merge<ConnectorOptions>(options)
+    this.options = ObjectMerge.merge<ConnectorOptions>({}, options)
   }
 
   static parse(url: string): UrlBuilder {
