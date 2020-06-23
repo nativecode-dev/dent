@@ -17,8 +17,8 @@ const DEFAULTS: Essentials.DeepPartial<ProgramArgs> = {
   _: [],
   protocol: 'http',
   retries: {
-    attempts: 20,
-    delay: 10000,
+    attempts: 10,
+    delay: 5000,
   },
 }
 
@@ -30,7 +30,7 @@ await builders.reduce<Promise<boolean>>(async (_, opts) => {
   await _
 
   const builder = new UrlBuilder(opts)
-  const url = builder.toUrl()
+  const url = builder.withPort().toUrl()
 
   try {
     return retryAsync(
@@ -42,7 +42,6 @@ await builders.reduce<Promise<boolean>>(async (_, opts) => {
             console.log('connected', url, response.status, response.statusText)
             return response.ok
           } catch (error) {
-            console.log('error', error)
             throw error
           }
         }
@@ -55,7 +54,6 @@ await builders.reduce<Promise<boolean>>(async (_, opts) => {
           connection.close()
           return true
         } catch (error) {
-          console.log('error', error)
           throw error
         }
       },
