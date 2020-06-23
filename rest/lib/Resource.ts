@@ -134,7 +134,7 @@ export abstract class Resource<T extends ResourceOptions> {
         return obj
       }, {})
 
-    return builder.withPath(routeUrl).withQuery(query).toURL()
+    return builder.withAuthentication().withPath(routeUrl).withPort().withQuery(query).toURL()
   }
 
   private headers(params: ResourceParams = []): Headers {
