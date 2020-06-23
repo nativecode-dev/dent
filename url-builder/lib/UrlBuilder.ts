@@ -1,4 +1,4 @@
-import { ConnectorOptions } from '../deps.ts'
+import { ConnectorOptions, join } from '../deps.ts'
 
 function normalizeHostString(value: string | undefined): string {
   if (value) {
@@ -126,6 +126,11 @@ export class UrlBuilder {
 
   withAuthentication() {
     this.builder.authenticated = true
+    return this
+  }
+
+  withPath(path: string) {
+    this.options.endpoint.path = this.options.endpoint.path ? join(this.options.endpoint.path, normalizePathString(path)) : path
     return this
   }
 

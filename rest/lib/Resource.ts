@@ -128,15 +128,8 @@ export abstract class Resource<T extends ResourceOptions> {
   }
 
   protected getUrl(route: string): string {
-    const builder = new UrlBuilder(
-      ObjectMerge.merge(this.options.connection, {
-        endpoint: {
-          path: [this.options.connection.endpoint.path, route].join('/'),
-        },
-      }),
-    )
-
-    return builder.withPort().toUrl()
+    const builder = new UrlBuilder(this.options.connection)
+    return builder.withPath(route).withPort().toUrl()
   }
 
   private headers(params: ResourceParams = []): Headers {

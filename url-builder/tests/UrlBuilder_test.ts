@@ -123,3 +123,15 @@ Deno.test('should parse ftp url with authentication, with trailing slash', () =>
     'ftp://admin:test@localhost:21/test/?name=value&name2=value',
   )
 })
+
+Deno.test('should parse url and add additional path', () => {
+  const builder = UrlBuilder.parse('http://admin:test@localhost/test')
+  assertEquals(builder.withPath('method').toUrl(), 'http://localhost/test/method')
+})
+
+
+Deno.test('should parse url and add additional path with slash', () => {
+  const builder = UrlBuilder.parse('http://admin:test@localhost/test')
+  assertEquals(builder.withPath('/method').toUrl(), 'http://localhost/test/method')
+})
+
