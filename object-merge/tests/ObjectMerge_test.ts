@@ -33,7 +33,9 @@ Deno.test('should clone array properties', () => {
 })
 
 Deno.test('should clone object properties', () => {
-  const targets = [{ address: { address1: 'Main Street' } }, { address: { address2: 'Suite 101' } }]
+  const address1 = { address: { address1: 'Main Street' } }
+  const address2 = { address: { address2: 'Suite 101' } }
+  const targets = [address1, address2]
   const merged = ObjectMerge.merge(...targets)
   assertEquals(merged, { address: { address1: 'Main Street', address2: 'Suite 101' } })
 })
