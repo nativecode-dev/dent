@@ -14,7 +14,7 @@ export namespace ObjectMerge {
     }
 
     if (typeof source !== 'object' || typeof target !== 'object') {
-      return source
+      return { ...source }
     }
 
     if (source instanceof Date || target instanceof Date) {
