@@ -129,9 +129,17 @@ Deno.test('should parse url and add additional path', () => {
   assertEquals(builder.withPath('method').toUrl(), 'http://localhost/test/method')
 })
 
-
 Deno.test('should parse url and add additional path with slash', () => {
   const builder = UrlBuilder.parse('http://admin:test@localhost/test')
   assertEquals(builder.withPath('/method').toUrl(), 'http://localhost/test/method')
 })
 
+Deno.test('should parse url and add additional query', () => {
+  const builder = UrlBuilder.parse('http://admin:test@localhost/test')
+  assertEquals(builder.withPath('/method').withQuery({ name: 'value' }).toUrl(), 'http://localhost/test/method?name=value')
+})
+
+Deno.test('should parse url and add additional query to existing', () => {
+  const builder = UrlBuilder.parse('http://admin:test@localhost/test?name=value')
+  assertEquals(builder.withPath('/method').withQuery({ test: 'value' }).toUrl(), 'http://localhost/test/method?name=value&test=value')
+})

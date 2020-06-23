@@ -1,4 +1,4 @@
-import { ConnectorOptions, join } from '../deps.ts'
+import { ConnectorOptions, ObjectMerge, join } from '../deps.ts'
 
 function normalizeHostString(value: string | undefined): string {
   if (value) {
@@ -136,6 +136,11 @@ export class UrlBuilder {
 
   withPort() {
     this.builder.includePort = true
+    return this
+  }
+
+  withQuery(query: any) {
+    this.options.endpoint.query = ObjectMerge.merge({}, this.options.endpoint.query, query)
     return this
   }
 
