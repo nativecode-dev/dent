@@ -106,7 +106,7 @@ export abstract class Resource<T extends ResourceOptions> {
   }
 
   protected getRoute(route: string, params: ResourceParams = []): URL {
-    const builder = new UrlBuilder(this.options.connection)
+    const builder = new UrlBuilder({ ...this.options.connection })
 
     const routeUrl = params
       .filter((param) => param.type === ResourceParamType.RouteParameter)
