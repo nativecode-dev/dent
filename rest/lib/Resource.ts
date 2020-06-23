@@ -64,7 +64,7 @@ export abstract class Resource<T extends ResourceOptions> {
       const response = await this.response(route, method, params)
       return response.arrayBuffer()
     } catch (error) {
-      console.error(error)
+      console.log(error)
       throw error
     }
   }
@@ -78,33 +78,28 @@ export abstract class Resource<T extends ResourceOptions> {
       const response = await this.response(route, method, params, resource)
       return response.json()
     } catch (error) {
-      console.error(error)
+      console.log(error)
       throw error
     }
   }
 
   protected async response(route: string, method: string, params: ResourceParams = [], body?: any): Promise<Response> {
-    try {
-      const headers = this.headers(params)
-      const url = this.getRoute(route, params).href
+    const headers = this.headers(params)
+    const url = this.getRoute(route, params).href
 
-      const request: RequestInit = {
-        headers,
-        method,
-        body: body ? JSON.stringify(body) : undefined,
-      }
-
-      const response = await fetch(url, request)
-
-      if (response.ok === false) {
-        throw new HttpError(request, response)
-      }
-
-      return response
-    } catch (error) {
-      console.error(error)
-      throw error
+    const request: RequestInit = {
+      headers,
+      method,
+      body: body ? JSON.stringify(body) : undefined,
     }
+
+    const response = await fetch(url, request)
+
+    if (response.ok === false) {
+      throw new HttpError(request, response)
+    }
+
+    return response
   }
 
   protected setHeader(name: string, value: string): void {
