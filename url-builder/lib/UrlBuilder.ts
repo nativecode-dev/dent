@@ -129,7 +129,11 @@ export class UrlBuilder {
   }
 
   withAuthentication() {
-    this.builder.authenticated = true
+    if (this.options.credentials) {
+      const hasPassword = typeof this.options.credentials.password === 'string'
+      const hasUsername = typeof this.options.credentials.username === 'string'
+      this.builder.authenticated = hasPassword || hasUsername
+    }
     return this
   }
 
