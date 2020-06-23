@@ -9,11 +9,13 @@ interface ProgramArgs {
 
   host?: string
   port?: number
+  protocol?: string
   type?: string
 }
 
 const DEFAULTS: Essentials.DeepPartial<ProgramArgs> = {
   _: [],
+  protocol: 'http',
   retries: {
     attempts: 10,
     delay: 2000,
@@ -21,30 +23,40 @@ const DEFAULTS: Essentials.DeepPartial<ProgramArgs> = {
 }
 
 const args = parse(Deno.args) as ProgramArgs
-const builders = args._.map((url) => UrlBuilder.parse(url as string))
+const builders = args._.map((url) => UrlBuilder.parseConnectorOptions(url))
 const options = ObjectMerge.merge<ProgramArgs>(DEFAULTS, args)
 
-await builders.reduce<Promise<boolean>>(async (_, current) => {
+await builders.reduce<Promise<boolean>>(async (_, opts) => {
   await _
 
-  const url = current.withAuthentication().withPort().toURL()
+  const builder = new UrlBuilder(opts)
+  const url = builder.toUrl()
 
   try {
     return retryAsync(
       async () => {
-        if (url.protocol === 'http' || url.protocol === 'https') {
-          console.log('trying', url.toString())
+        console.log('trying', opts.endpoint.host, opts.endpoint.port)
+
+        if (opts.endpoint.protocol === 'http:' || opts.endpoint.protocol === 'https:') {
           const response = await fetch(url)
-          console.log(url.toString(), response.status, response.statusText)
+          console.log(url, response.status, response.statusText)
           return response.ok
         }
 
-        return false
+        try {
+          const options = { hostname: opts.endpoint.host, port: opts.endpoint.port! }
+          const connection = await Deno.connect(options)
+          console.log(opts.endpoint.host, opts.endpoint.port, 'connected')
+          connection.close()
+          return true
+        } catch {
+          throw new Error()
+        }
       },
       { delay: options.retries.delay!, maxTry: options.retries.attempts! },
     )
   } catch {
-    console.log(url.toString(), 'failed')
+    console.log(url, 'failed')
     return false
   }
 }, Promise.resolve(false))

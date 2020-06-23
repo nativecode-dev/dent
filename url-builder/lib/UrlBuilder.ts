@@ -117,7 +117,11 @@ export class UrlBuilder {
   constructor(private readonly options: ConnectorOptions) {}
 
   static parse(url: string): UrlBuilder {
-    return new UrlBuilder(parseConnectorOptions(url))
+    return new UrlBuilder(UrlBuilder.parseConnectorOptions(url))
+  }
+
+  static parseConnectorOptions(url: string): ConnectorOptions {
+    return parseConnectorOptions(url)
   }
 
   withAuthentication() {
