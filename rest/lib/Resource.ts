@@ -20,7 +20,7 @@ export abstract class Resource<T extends ResourceOptions> {
   protected readonly options: T
 
   constructor(options: Essentials.DeepPartial<T>) {
-    this.options = ObjectMerge.merge<T>({ ...DefaultOptions } as Essentials.DeepPartial<T>, options)
+    this.options = ObjectMerge.merge<T>(DefaultOptions as Essentials.DeepPartial<T>, options)
   }
 
   protected async http_get<T>(route: string, ...params: ResourceParams): Promise<T> {
