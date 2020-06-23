@@ -30,7 +30,7 @@ export abstract class Resource<T extends ResourceOptions> {
   }
 
   protected createUrl(): URL {
-    return new UrlBuilder(this.options.connection).withTralingSlash().toURL()
+    return new UrlBuilder(this.options.connection).withPort().withTralingSlash().toURL()
   }
 
   protected async http_get<T>(route: string, ...params: ResourceParams): Promise<T> {
