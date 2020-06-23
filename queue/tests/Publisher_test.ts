@@ -43,7 +43,7 @@ Deno.test('should not acknowledge consumed message', async () => {
   const factory = new ConsumerFactory<TestMessage>(CONNECTION, QUEUE)
   const consumer = await factory.create()
   const envelope = await consumer.consume()
-  await consumer.nack(envelope)
+  await consumer.nack(envelope, true)
   await factory.close()
 
   assertEquals(envelope.body, message)

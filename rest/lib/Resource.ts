@@ -18,19 +18,9 @@ export abstract class Resource<T extends ResourceOptions> {
   protected readonly encoder = new TextEncoder()
   protected readonly decoder = new TextDecoder()
   protected readonly options: T
-  protected readonly url: URL
 
   constructor(options: Essentials.DeepPartial<T>) {
     this.options = ObjectMerge.merge<T>({ ...DefaultOptions } as Essentials.DeepPartial<T>, options)
-    this.url = this.createUrl()
-  }
-
-  public get base(): URL {
-    return this.url
-  }
-
-  protected createUrl(): URL {
-    return new UrlBuilder(this.options.connection).withPort().withTralingSlash().toURL()
   }
 
   protected async http_get<T>(route: string, ...params: ResourceParams): Promise<T> {
@@ -138,11 +128,15 @@ export abstract class Resource<T extends ResourceOptions> {
   }
 
   protected getUrl(route: string): string {
-    if (route.startsWith('http')) {
-      return route
-    }
+    const builder = new UrlBuilder(
+      ObjectMerge.merge(this.options.connection, {
+        endpoint: {
+          path: [this.options.connection.endpoint.path, route].join('/'),
+        },
+      }),
+    )
 
-    return route.startsWith('/') ? `${this.base.href}${route.substring(1)}` : `${this.base.href}${route}`
+    return builder.withPort().toUrl()
   }
 
   private headers(params: ResourceParams = []): Headers {
