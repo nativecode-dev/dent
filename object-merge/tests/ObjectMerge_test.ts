@@ -2,15 +2,15 @@ import { assertEquals } from '../test_deps.ts'
 import { ObjectMerge } from '../lib/ObjectMerge.ts'
 
 const CONNECTION_EXPECTED = {
-  connections: [
-    {
+  connections: {
+    couchdb: {
       name: 'couchdb',
       host: 'localhost',
       options: {
         url: 'http://localhost:5984/testdb',
       },
     },
-    {
+    rabbit: {
       name: 'rabbit',
       host: 'localhost',
       auth: {
@@ -18,7 +18,7 @@ const CONNECTION_EXPECTED = {
         user: 'adminpassword',
       },
     },
-  ],
+  },
   account: {
     username: 'admin',
     password: 'test',
@@ -28,15 +28,15 @@ const CONNECTION_EXPECTED = {
 
 const CONNECTION_TARGETS = [
   {
-    connections: [
-      {
+    connections: {
+      couchdb: {
         name: 'couchdb',
         host: 'localhost',
         options: {
           url: 'http://localhost:5984/testdb',
         },
       },
-    ],
+    },
     account: {
       username: 'root',
       password: 'pass',
@@ -44,15 +44,8 @@ const CONNECTION_TARGETS = [
     },
   },
   {
-    account: {
-      username: 'admin',
-      password: 'test',
-      created: new Date(2020, 1, 1, 0, 0, 0),
-    },
-  },
-  {
-    connections: [
-      {
+    connections: {
+      rabbit: {
         name: 'rabbit',
         host: 'localhost',
         auth: {
@@ -60,7 +53,12 @@ const CONNECTION_TARGETS = [
           user: 'adminpassword',
         },
       },
-    ],
+    },
+    account: {
+      username: 'admin',
+      password: 'test',
+      created: new Date(2020, 1, 1, 0, 0, 0),
+    },
   },
 ]
 
@@ -124,6 +122,12 @@ Deno.test('should ovewrite string properties', () => {
 })
 
 Deno.test('should merge complex object', () => {
-  const merged = ObjectMerge.mergex({ dedupe: true }, ...CONNECTION_TARGETS)
+  const merged = ObjectMerge.merge(...CONNECTION_TARGETS)
   assertEquals(merged, CONNECTION_EXPECTED)
+})
+
+Deno.test('should merge and validate value identity', () => {
+  const merged = ObjectMerge.merge(...CONNECTION_TARGETS)
+  assertEquals(merged.connections!.couchdb === CONNECTION_EXPECTED.connections.couchdb, false)
+  assertEquals(merged.connections!.rabbit!.auth === CONNECTION_EXPECTED.connections.rabbit.auth, false)
 })
