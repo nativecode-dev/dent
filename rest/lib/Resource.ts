@@ -60,8 +60,13 @@ export abstract class Resource<T extends ResourceOptions> {
   }
 
   protected async blob(route: string, method: string, params: ResourceParams): Promise<ArrayBuffer | SharedArrayBuffer> {
-    const response = await this.response(route, method, params)
-    return response.arrayBuffer()
+    try {
+      const response = await this.response(route, method, params)
+      return response.arrayBuffer()
+    } catch (error) {
+      console.error(error)
+      throw error
+    }
   }
 
   protected buffer(route: string, method: string, params: ResourceParams) {
@@ -69,8 +74,13 @@ export abstract class Resource<T extends ResourceOptions> {
   }
 
   protected async json<T, R>(route: string, method: string, params: ResourceParams, resource?: T): Promise<R> {
-    const response = await this.response(route, method, params, resource)
-    return response.json()
+    try {
+      const response = await this.response(route, method, params, resource)
+      return response.json()
+    } catch (error) {
+      console.error(error)
+      throw error
+    }
   }
 
   protected async response(route: string, method: string, params: ResourceParams = [], body?: any): Promise<Response> {
@@ -92,6 +102,7 @@ export abstract class Resource<T extends ResourceOptions> {
 
       return response
     } catch (error) {
+      console.error(error)
       throw error
     }
   }
@@ -101,8 +112,13 @@ export abstract class Resource<T extends ResourceOptions> {
   }
 
   protected async text(route: string, method: string, params: ResourceParams): Promise<string> {
-    const response = await this.response(route, method, params)
-    return response.text()
+    try {
+      const response = await this.response(route, method, params)
+      return response.text()
+    } catch (error) {
+      console.error(error)
+      throw error
+    }
   }
 
   protected getRoute(route: string, params: ResourceParams = []): URL {
