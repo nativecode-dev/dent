@@ -14,7 +14,7 @@ export namespace ObjectMerge {
     }
 
     if (typeof source !== 'object' || typeof target !== 'object') {
-      return { ...source }
+      return source
     }
 
     if (source instanceof Date || target instanceof Date) {
@@ -47,10 +47,10 @@ export namespace ObjectMerge {
   }
 
   export function merge<T extends any>(...targets: Array<Essentials.DeepPartial<T>>): T {
-    return mergex(DefaultObjectMergeOptions, {} as any, ...targets)
+    return mergex(DefaultObjectMergeOptions, ...targets)
   }
 
   export function mergex<T extends any>(options: ObjectMergeOptions, ...targets: Array<Essentials.DeepPartial<T>>): T {
-    return targets.filter((x) => x !== undefined).reduce((target, source) => clone(source, target, options)) as T
+    return targets.filter((x) => x !== undefined).reduce((target, source) => clone(source, target, options), {}) as T
   }
 }
