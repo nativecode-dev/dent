@@ -7,8 +7,8 @@ stages:
 test:
   stage: test
   script:
-    - deno run --allow-net connector/mod_run.ts http://localhost:5984
-    - deno run --allow-net connector/mod_run.ts http://localhost:6379
+    - deno run --allow-net status-check/mod_run.ts http://localhost:5984
+    - deno run --allow-net status-check/mod_run.ts http://localhost:6379
     - deno run --allow-env --allow-read --allow-write --unstable dent-cli/mod_run.ts refresh --log
     - deno test -c tsconfig.json --allow-env --allow-read --allow-net --allow-write
   services:
