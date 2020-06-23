@@ -37,7 +37,7 @@ export namespace ObjectMerge {
       } else if (Array.isArray(sourceValue)) {
         result[property] = [...sourceValue]
       } else if (cloneType === 'object' && sourceType === 'object') {
-        result[property] = clone({ ...sourceValue }, cloneValue, options)
+        result[property] = clone(sourceValue, { ...cloneValue }, options)
       } else if (sourceValue !== cloneValue) {
         result[property] = sourceValue
       }
@@ -47,7 +47,7 @@ export namespace ObjectMerge {
   }
 
   export function merge<T extends any>(...targets: Array<Essentials.DeepPartial<T>>): T {
-    return mergex(DefaultObjectMergeOptions, ...targets)
+    return mergex(DefaultObjectMergeOptions, {} as any, ...targets)
   }
 
   export function mergex<T extends any>(options: ObjectMergeOptions, ...targets: Array<Essentials.DeepPartial<T>>): T {
