@@ -35,15 +35,15 @@ await builders.reduce<Promise<boolean>>(async (_, opts) => {
   try {
     return retryAsync(
       async () => {
-        console.log('trying', opts.endpoint.host, opts.endpoint.port)
-
         if (opts.endpoint.protocol === 'http:' || opts.endpoint.protocol === 'https:') {
+          console.log('trying web', opts.endpoint.host, opts.endpoint.port)
           const response = await fetch(url)
           console.log(url, response.status, response.statusText)
           return response.ok
         }
 
         try {
+          console.log('trying port', opts.endpoint.host, opts.endpoint.port)
           const options = { hostname: opts.endpoint.host, port: opts.endpoint.port! }
           const connection = await Deno.connect(options)
           console.log(opts.endpoint.host, opts.endpoint.port, 'connected')
