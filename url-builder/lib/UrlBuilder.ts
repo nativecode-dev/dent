@@ -1,4 +1,4 @@
-import { ConnectorOptions, ObjectMerge, join } from '../deps.ts'
+import { ConnectorOptions, Essentials, ObjectMerge, join } from '../deps.ts'
 
 function normalizeHostString(value: string | undefined): string {
   if (value) {
@@ -114,7 +114,11 @@ export class UrlBuilder {
     trailingSlash: false,
   }
 
-  constructor(private readonly options: ConnectorOptions) {}
+  private readonly options: ConnectorOptions
+
+  constructor(options: Essentials.DeepPartial<ConnectorOptions>) {
+    this.options = ObjectMerge.merge<ConnectorOptions>(options)
+  }
 
   static parse(url: string): UrlBuilder {
     return new UrlBuilder(UrlBuilder.parseConnectorOptions(url))
