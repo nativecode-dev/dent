@@ -111,7 +111,7 @@ export abstract class Resource<T extends ResourceOptions> {
       const response = await this.response(route, method, params)
       return response.text()
     } catch (error) {
-      console.error(error)
+      console.log(error)
       throw error
     }
   }
