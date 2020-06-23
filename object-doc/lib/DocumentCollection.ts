@@ -9,3 +9,5 @@ export interface DocumentCollection<T extends Document> {
   get(id: string): Promise<T>
   update(document: Essentials.DeepPartial<T>, dockey: DocumentKey<T>): Promise<string>
 }
+
+export const DocumentCollectionKey: symbol = Symbol('DocumentCollection')
