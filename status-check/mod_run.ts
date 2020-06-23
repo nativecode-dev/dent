@@ -32,10 +32,14 @@ await builders.reduce<Promise<boolean>>(async (_, current) => {
   try {
     return retryAsync(
       async () => {
-        console.log('trying', url.toString())
-        const response = await fetch(url)
-        console.log(url.toString(), response.status, response.statusText)
-        return response.ok
+        if (url.protocol === 'http' || url.protocol === 'https') {
+          console.log('trying', url.toString())
+          const response = await fetch(url)
+          console.log(url.toString(), response.status, response.statusText)
+          return response.ok
+        }
+
+        return false
       },
       { delay: options.retries.delay!, maxTry: options.retries.attempts! },
     )

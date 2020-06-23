@@ -38,24 +38,29 @@ Deno.test('should get url from connection options, with authentication and port'
   assertEquals(builder.withAuthentication().withPort().toUrl(), 'https://admin:g0ds3xl0v3@localhost:443/')
 })
 
+Deno.test('should parse url from hostname', () => {
+  const builder = UrlBuilder.parse('//localhost')
+  assertEquals(builder.toUrl(), 'localhost')
+})
+
+Deno.test('should parse url from hostname with port', () => {
+  const builder = UrlBuilder.parse('//localhost:80')
+  assertEquals(builder.withPort().toUrl(), 'localhost:80')
+})
+
 Deno.test('should parse url', () => {
   const builder = UrlBuilder.parse('http://localhost')
-  assertEquals(builder.toUrl(), 'http://localhost/')
+  assertEquals(builder.toUrl(), 'http://localhost')
 })
 
 Deno.test('should parse url, output port', () => {
   const builder = UrlBuilder.parse('https://localhost')
-  assertEquals(builder.withPort().toUrl(), 'https://localhost:443/')
-})
-
-Deno.test('should parse url as shorthand', () => {
-  const builder = UrlBuilder.parse('//localhost')
-  assertEquals(builder.withPort().toUrl(), 'https://localhost:443/')
+  assertEquals(builder.withPort().toUrl(), 'https://localhost:443')
 })
 
 Deno.test('should parse url with trailing slash', () => {
   const builder = UrlBuilder.parse('http://localhost/')
-  assertEquals(builder.toUrl(), 'http://localhost/')
+  assertEquals(builder.toUrl(), 'http://localhost')
 })
 
 Deno.test('should parse url with path and trailing slash', () => {

@@ -20,7 +20,7 @@ function normalizePortNumber(protocol: string, value: number | string | undefine
     return value
   }
 
-  if (typeof value === 'string') {
+  if (typeof value === 'string' && /[\d]+/g.test(value)) {
     return parseInt(value, 0)
   }
 
@@ -48,7 +48,7 @@ function normalizeProtocolString(value: string | undefined): string {
     return `${value}:`
   }
 
-  return 'https:'
+  return ''
 }
 
 function normalizeQueryObject(value: any): string[] {
@@ -73,21 +73,21 @@ function parseConnectorOptions(url: string): ConnectorOptions {
   const builder = url
   const firstAt = builder.indexOf('@') + 1
   const firstColon = builder.indexOf(':')
-  const firstDoubleSlash = builder.indexOf('//') + 2
+  const firstDoubleSlash = builder.indexOf('//') > -1 ? builder.indexOf('//') + 2 : 0
   const firstSlash = builder.indexOf('/', firstDoubleSlash) > -1 ? builder.indexOf('/', firstDoubleSlash) : url.length
-
-  const protocol = firstColon > -1 ? builder.slice(0, firstColon + 1) : 'https:'
 
   const [auth, hostpart] = builder.slice(firstDoubleSlash, firstSlash).split('@')
   const [host, port] = builder.slice(firstAt > 0 ? firstAt : firstDoubleSlash, firstSlash).split(':')
   const [path, query] = builder.slice(firstSlash).split('?')
 
+  const protocol = normalizeProtocolString(url.slice(0, firstDoubleSlash > 0 ? firstDoubleSlash - 2 : firstColon))
+
   const options: ConnectorOptions = {
     endpoint: {
       host: normalizeHostString(host),
       path: normalizePathString(path),
-      port: normalizePortNumber(normalizeProtocolString(protocol), port),
-      protocol: normalizeProtocolString(protocol),
+      port: normalizePortNumber(protocol, port),
+      protocol,
       query: normalizeQueryString(query),
     },
     name: 'test',
@@ -147,7 +147,10 @@ export class UrlBuilder {
     const url = []
 
     const protocol = normalizeProtocolString(this.options.endpoint.protocol)
-    url.push(protocol, '//')
+
+    if (protocol !== ':' && protocol !== '') {
+      url.push(protocol, '//')
+    }
 
     if (this.builder.authenticated && this.options.credentials) {
       const { password, username } = this.options.credentials
@@ -164,9 +167,8 @@ export class UrlBuilder {
       url.push(normalizePortString(protocol, this.options.endpoint.port))
     }
 
-    url.push('/')
-
     if (this.options.endpoint.path) {
+      url.push('/')
       url.push(normalizePathString(this.options.endpoint.path))
     }
 
