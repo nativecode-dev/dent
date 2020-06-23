@@ -17,8 +17,8 @@ const DEFAULTS: Essentials.DeepPartial<ProgramArgs> = {
   _: [],
   protocol: 'http',
   retries: {
-    attempts: 10,
-    delay: 2000,
+    attempts: 20,
+    delay: 10000,
   },
 }
 
