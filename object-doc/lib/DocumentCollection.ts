@@ -6,8 +6,8 @@ import { DocumentKey } from './DocumentKey.ts'
 export interface DocumentCollection<T extends Document> {
   all(): Promise<T[]>
   delete(id: string, ...args: any[]): Promise<void>
-  get(id: string): Promise<T>
-  update(document: Essentials.DeepPartial<T>, dockey: DocumentKey<T>): Promise<T | null>
+  get(id: string): Promise<T | null>
+  update(document: Essentials.DeepPartial<T>, dockey: DocumentKey<T>): Promise<T>
 }
 
 export const DocumentCollectionKey: symbol = Symbol('DocumentCollection')
