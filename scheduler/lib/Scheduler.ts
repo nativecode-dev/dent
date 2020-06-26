@@ -1,0 +1,56 @@
+import { daily, every, hourly, monthly, once, yearly } from '../deps.ts'
+
+import { Schedule } from './Schedule.ts'
+import { SchedulerState } from './SchedulerState.ts'
+import { ScheduleJobState } from './ScheduleJobState.ts'
+
+const FUNCTIONS: { [key: string]: (t: any, fn: any) => string } = { daily, every, hourly, monthly, once, yearly }
+
+export class Scheduler {
+  private readonly decoder = new TextDecoder()
+  private readonly state: SchedulerState = { jobs: {}, started: false }
+
+  get jobs(): string[] {
+    return Object.keys(this.state.jobs)
+  }
+
+  fromSchedule(schedule: Schedule): string {
+    const scheduler = FUNCTIONS[schedule.type]
+
+    const job = (this.state.jobs[schedule.name] = {
+      id: scheduler(schedule.schedule, async () => {
+        const job = this.state.jobs[schedule.name]
+
+        job.state = ScheduleJobState.running
+
+        try {
+          if (typeof job.schedule.command === 'string') {
+            await this.exec(job.schedule.schedule)
+          }
+
+          if (typeof job.schedule.command === 'function') {
+            await job.schedule.command()
+          }
+        } finally {
+          job.state = ScheduleJobState.stopped
+        }
+      }),
+      schedule,
+      state: ScheduleJobState.pending,
+    })
+
+    return job.id
+  }
+
+  async fromScheduleFile(filename: string): Promise<string> {
+    const contents = await Deno.readTextFile(filename)
+    const schedule: Schedule = JSON.parse(contents)
+    return this.fromSchedule(schedule)
+  }
+
+  protected async exec(command: string): Promise<string> {
+    const process = Deno.run({ cmd: [command], stdout: 'piped' })
+    const output = await process.output()
+    return this.decoder.decode(output)
+  }
+}
