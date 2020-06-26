@@ -1,4 +1,5 @@
 import { Scheduler } from '../lib/Scheduler.ts'
+import { ScheduleType } from '../lib/ScheduleType.ts'
 
 Deno.test('should execute single task once', async () => {
   await new Promise((resolve) => {
@@ -8,7 +9,7 @@ Deno.test('should execute single task once', async () => {
       command: () => resolve(),
       name: 'test',
       schedule: '1s',
-      type: 'once',
+      type: ScheduleType.once,
     })
   })
 })
