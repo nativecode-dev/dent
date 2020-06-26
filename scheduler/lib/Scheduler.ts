@@ -1,4 +1,4 @@
-import { daily, every, hourly, monthly, once, yearly } from '../deps.ts'
+import { daily, every, hourly, monthly, once, unregister, yearly } from '../deps.ts'
 
 import { Schedule } from './Schedule.ts'
 import { SchedulerState } from './SchedulerState.ts'
@@ -8,10 +8,14 @@ const FUNCTIONS: { [key: string]: (t: any, fn: any) => string } = { daily, every
 
 export class Scheduler {
   private readonly decoder = new TextDecoder()
-  private readonly state: SchedulerState = { jobs: {}, started: false }
+  private readonly state: SchedulerState = { jobs: {} }
 
   get jobs(): string[] {
     return Object.keys(this.state.jobs)
+  }
+
+  cancel(name: string): void {
+    unregister(this.state.jobs[name].id)
   }
 
   fromSchedule(schedule: Schedule): string {
