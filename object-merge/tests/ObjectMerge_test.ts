@@ -63,7 +63,7 @@ const CONNECTION_TARGETS = [
 ]
 
 Deno.test('should merge arrays', () => {
-  const merged: string[] = ObjectMerge.merge(['a', 'b', 'c'], ['d', 'e', 'e'])
+  const merged: string[] = ObjectMerge.mergex({ dedupe: false }, ['a', 'b', 'c'], ['d', 'e', 'e'])
   assertEquals(merged.sort(), ['a', 'b', 'c', 'd', 'e', 'e'])
 })
 

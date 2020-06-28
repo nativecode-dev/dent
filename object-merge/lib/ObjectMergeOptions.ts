@@ -3,5 +3,5 @@ export interface ObjectMergeOptions {
 }
 
 export const DefaultObjectMergeOptions: ObjectMergeOptions = {
-  dedupe: false,
+  dedupe: true,
 }
