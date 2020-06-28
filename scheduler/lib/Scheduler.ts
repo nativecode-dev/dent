@@ -25,9 +25,13 @@ export class Scheduler {
       id: scheduler(schedule.schedule, async () => {
         const job = this.state.jobs[schedule.name]
 
-        job.state = ScheduleJobState.running
+        if (job.state === ScheduleJobState.running) {
+          return
+        }
 
         try {
+          job.state = ScheduleJobState.running
+
           if (typeof job.schedule.command === 'string') {
             await this.exec(job.schedule.schedule)
           }
