@@ -30,8 +30,8 @@ interface TestMessage {
 
 Deno.test('should publish to queue', async () => {
   const message = { test: 'message' }
-  const factory = new PublisherFactory<TestMessage>(CONNECTION, QUEUE)
-  const publisher = await factory.create()
+  const factory = new PublisherFactory(CONNECTION)
+  const publisher = await factory.create<TestMessage>(QUEUE)
   const envelope = await publisher.send(message)
   await factory.close()
 
@@ -40,8 +40,8 @@ Deno.test('should publish to queue', async () => {
 
 Deno.test('should not acknowledge consumed message', async () => {
   const message = { test: 'message' }
-  const factory = new ConsumerFactory<TestMessage>(CONNECTION, QUEUE)
-  const consumer = await factory.create()
+  const factory = new ConsumerFactory(CONNECTION)
+  const consumer = await factory.create<TestMessage>(QUEUE)
   const envelope = await consumer.consume()
   await consumer.nack(envelope, true)
   await factory.close()
@@ -51,8 +51,8 @@ Deno.test('should not acknowledge consumed message', async () => {
 
 Deno.test('should acknowledge consumed message', async () => {
   const message = { test: 'message' }
-  const factory = new ConsumerFactory<TestMessage>(CONNECTION, QUEUE)
-  const consumer = await factory.create()
+  const factory = new ConsumerFactory(CONNECTION)
+  const consumer = await factory.create<TestMessage>(QUEUE)
   const envelope = await consumer.consume()
   await consumer.ack(envelope)
   await factory.close()
