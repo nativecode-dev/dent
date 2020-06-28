@@ -50,7 +50,17 @@ class Consumer<T> implements IConsumer<T> {
     return new Promise(async (resolve) => {
       return this.channel.consume(this.options, async (args, props, data) => {
         const envelop: Envelope<T> = JSON.parse(this.decoder.decode(data))
-        resolve({ args, props, body: envelop.body, subject: envelop.subject })
+
+        const envqueue: EnvelopeQueue<T> = {
+          args,
+          props,
+          body: envelop.body,
+          subject: envelop.subject,
+          ack: () => this.ack(envqueue),
+          nack: () => this.nack(envqueue, true),
+        }
+
+        resolve(envqueue)
       })
     })
   }
