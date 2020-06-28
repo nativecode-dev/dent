@@ -16,6 +16,7 @@ export * from './queue/mod.ts'
 export * from './rest/mod.ts'
 export * from './scheduler/mod.ts'
 export * from './status-check/mod.ts'
+export * from './sysinfo/mod.ts'
 export * from './throttle/mod.ts'
 export * from './url-builder/mod.ts'
 
