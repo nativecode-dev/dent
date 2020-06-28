@@ -7,7 +7,7 @@ import { QueueOptions } from './QueueOptions.ts'
 export class ConsumerFactory<T> {
   private connection: AmqpConnection | undefined
 
-  constructor(private readonly coptions: ConnectorOptions, private readonly options: QueueOptions) {}
+  constructor(private readonly coptions: ConnectorOptions) {}
 
   async close() {
     if (this.connection) {
@@ -17,7 +17,7 @@ export class ConsumerFactory<T> {
     this.connection = undefined
   }
 
-  async create(): Promise<IConsumer<T>> {
+  async create(options: QueueOptions): Promise<IConsumer<T>> {
     this.connection = await connect({
       hostname: this.coptions.endpoint.host,
       password: this.coptions.credentials?.password,
@@ -25,9 +25,9 @@ export class ConsumerFactory<T> {
     })
 
     const channel = await this.connection.openChannel()
-    const queue = await channel.declareQueue(this.options)
+    const queue = await channel.declareQueue(options)
 
-    return new Consumer<T>(channel, this.options, queue)
+    return new Consumer<T>(channel, options, queue)
   }
 }
 

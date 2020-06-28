@@ -6,11 +6,7 @@ import { QueueOptions } from './QueueOptions.ts'
 export class PublisherFactory<T> {
   private connection: AmqpConnection | undefined
 
-  constructor(private readonly coptions: ConnectorOptions, private readonly options: QueueOptions) {
-    if (this.options.queue === undefined) {
-      this.options.queue = this.options.subject
-    }
-  }
+  constructor(private readonly coptions: ConnectorOptions) {}
 
   async close() {
     if (this.connection) {
@@ -20,7 +16,7 @@ export class PublisherFactory<T> {
     this.connection = undefined
   }
 
-  async create(): Promise<IPublisher<T>> {
+  async create(options: QueueOptions): Promise<IPublisher<T>> {
     this.connection = await connect({
       hostname: this.coptions.endpoint.host,
       password: this.coptions.credentials?.password,
@@ -30,9 +26,9 @@ export class PublisherFactory<T> {
     })
 
     const channel = await this.connection.openChannel()
-    const queue = await channel.declareQueue(this.options)
+    const queue = await channel.declareQueue(options)
 
-    return new Publisher<T>(this.options, channel, queue)
+    return new Publisher<T>(options, channel, queue)
   }
 }
 
