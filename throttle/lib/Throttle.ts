@@ -1,19 +1,41 @@
-type ThrottleCallback = (...args: any[]) => any | Promise<any>
+import { all, sync } from '../deps.ts'
 
-interface GlobalContext {
-  [key: string]: ThrottleContext
+export interface ThrottleTask {
+  (...args: any[]): Promise<any>
 }
 
-interface ThrottleContext {
-  callback: ThrottleCallback
-  name: string
+const DECODER = new TextDecoder()
+const STATE: any = {}
+
+async function getCpuCount(): Promise<number> {
+  if (STATE.cpu) {
+    return STATE.cpu
+  }
+
+  const cmd = Deno.run({ cmd: ['nproc'], stderr: 'piped', stdout: 'piped' })
+
+  try {
+    const output = await cmd.output()
+    return (STATE.cpu = parseInt(DECODER.decode(output), 0))
+  } catch {
+    return 4
+  } finally {
+    cmd.close()
+  }
 }
 
-const QUEUE: GlobalContext = {
-  global: {
-    callback: () => {},
-    name: 'global',
-  },
-}
+export class Throttle {
+  static all(tasks: ThrottleTask[]): Promise<any> {
+    return new Throttle().async(tasks)
+  }
 
-export function throttle(callbacks: ThrottleCallback[], max: number = 2, context: ThrottleContext = QUEUE.global) {}
+  async async(tasks: ThrottleTask[]): Promise<any> {
+    const cpucount = await getCpuCount()
+    return await all(tasks, { maxInProgress: cpucount })
+  }
+
+  async sync(tasks: ThrottleTask[]): Promise<any> {
+    const cpucount = await getCpuCount()
+    return await sync(tasks, { maxInProgress: cpucount })
+  }
+}
