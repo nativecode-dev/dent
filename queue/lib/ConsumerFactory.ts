@@ -68,12 +68,4 @@ class Consumer<T> implements IConsumer<T> {
   nack(envelop: EnvelopeQueue<T>, requeue: boolean = true) {
     return this.channel.nack({ deliveryTag: envelop.args.deliveryTag, requeue })
   }
-
-  protected async *generator(): AsyncGenerator<EnvelopeQueue<T>> {
-    let envelope: EnvelopeQueue<T>
-
-    while ((envelope = await this.consume())) {
-      yield envelope
-    }
-  }
 }
