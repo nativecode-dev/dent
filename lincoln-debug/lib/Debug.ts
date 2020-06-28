@@ -16,7 +16,7 @@ export class LincolnLogDebug extends LincolnLog {
   }
 
   protected render(envelope: LincolnEnvelope): Promise<void> {
-    const scope = [this.messageTypeString(envelope.message.type), envelope.scope].join(':')
+    const scope = [envelope.scope, this.messageTypeString(envelope.message.type)].join(':')
     const logger: any = DEBUG_LOGGERS[scope] ? DEBUG_LOGGERS[scope] : (DEBUG_LOGGERS[scope] = Debug.default(scope))
 
     const messageHasString = typeof envelope.message.body === 'string'

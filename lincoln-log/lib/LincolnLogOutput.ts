@@ -1,7 +1,7 @@
 import { DenoLog, Lincoln, LincolnEnvelope, LincolnLog, LincolnMessageType } from '../deps.ts'
 
 class LincolnLogOutput extends LincolnLog {
-  constructor(lincoln: Lincoln) { 
+  constructor(lincoln: Lincoln) {
     super(lincoln)
 
     DenoLog.setup({
@@ -14,6 +14,10 @@ class LincolnLogOutput extends LincolnLog {
         },
       },
     })
+  }
+
+  static observe(lincoln: Lincoln): LincolnLogOutput {
+    return new LincolnLogOutput(lincoln)
   }
 
   protected async initialize(): Promise<void> {
