@@ -4,7 +4,7 @@ import { Envelope } from './Envelope.ts'
 import { EnvelopeQueue } from './EnvelopeQueue.ts'
 import { QueueOptions } from './QueueOptions.ts'
 
-export class ConsumerFactory<T> {
+export class ConsumerFactory {
   private connection: AmqpConnection | undefined
 
   constructor(private readonly coptions: ConnectorOptions) {}
@@ -17,7 +17,7 @@ export class ConsumerFactory<T> {
     this.connection = undefined
   }
 
-  async create(options: QueueOptions): Promise<IConsumer<T>> {
+  async create<T>(options: QueueOptions): Promise<IConsumer<T>> {
     this.connection = await connect({
       hostname: this.coptions.endpoint.host,
       password: this.coptions.credentials?.password,

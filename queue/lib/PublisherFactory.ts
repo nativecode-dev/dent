@@ -3,7 +3,7 @@ import { connect, AmqpConnection, AmqpChannel, ConnectorOptions, QueueDeclareOk 
 import { Envelope } from './Envelope.ts'
 import { QueueOptions } from './QueueOptions.ts'
 
-export class PublisherFactory<T> {
+export class PublisherFactory {
   private connection: AmqpConnection | undefined
 
   constructor(private readonly coptions: ConnectorOptions) {}
@@ -16,7 +16,7 @@ export class PublisherFactory<T> {
     this.connection = undefined
   }
 
-  async create(options: QueueOptions): Promise<IPublisher<T>> {
+  async create<T>(options: QueueOptions): Promise<IPublisher<T>> {
     this.connection = await connect({
       hostname: this.coptions.endpoint.host,
       password: this.coptions.credentials?.password,
