@@ -31,31 +31,41 @@ interface TestMessage {
 Deno.test('should publish to queue', async () => {
   const message = { test: 'message' }
   const factory = new PublisherFactory(CONNECTION)
-  const publisher = await factory.create<TestMessage>(QUEUE)
-  const envelope = await publisher.send(message)
-  await factory.close()
 
-  assertEquals(envelope, { body: message, subject: QUEUE.subject })
+  try {
+    const publisher = await factory.create<TestMessage>(QUEUE)
+    const envelope = await publisher.send(message)
+    assertEquals(envelope, { body: message, subject: QUEUE.subject })
+  } finally {
+    await factory.close()
+  }
 })
 
 Deno.test('should not acknowledge consumed message', async () => {
   const message = { test: 'message' }
   const factory = new ConsumerFactory(CONNECTION)
-  const consumer = await factory.create<TestMessage>(QUEUE)
-  const envelope = await consumer.consume()
-  await consumer.nack(envelope, true)
-  await factory.close()
 
-  assertEquals(envelope.body, message)
+  try {
+    const consumer = await factory.create<TestMessage>(QUEUE)
+    const envelope = await consumer.consume()
+    await envelope.nack()
+    assertEquals(envelope.body, message)
+  } finally {
+    await factory.close()
+  }
 })
 
 Deno.test('should acknowledge consumed message', async () => {
   const message = { test: 'message' }
   const factory = new ConsumerFactory(CONNECTION)
-  const consumer = await factory.create<TestMessage>(QUEUE)
-  const envelope = await consumer.consume()
-  await consumer.ack(envelope)
-  await factory.close()
 
-  assertEquals(envelope.body, message)
+  try {
+    const consumer = await factory.create<TestMessage>(QUEUE)
+    const envelope = await consumer.consume()
+    await envelope.ack()
+
+    assertEquals(envelope.body, message)
+  } finally {
+    await factory.close()
+  }
 })

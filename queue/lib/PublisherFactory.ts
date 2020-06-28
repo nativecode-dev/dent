@@ -1,4 +1,4 @@
-import { connect, AmqpConnection, AmqpChannel, ConnectorOptions, QueueDeclareOk } from '../deps.ts'
+import { connect, AmqpConnection, AmqpChannel, ConnectorOptions, ObjectMerge, QueueDeclareOk } from '../deps.ts'
 
 import { Envelope } from './Envelope.ts'
 import { QueueOptions } from './QueueOptions.ts'
@@ -6,7 +6,7 @@ import { QueueOptions } from './QueueOptions.ts'
 export class PublisherFactory {
   private connection: AmqpConnection | undefined
 
-  constructor(private readonly coptions: ConnectorOptions) {}
+  constructor(private readonly options: ConnectorOptions) {}
 
   async close() {
     if (this.connection) {
@@ -17,18 +17,25 @@ export class PublisherFactory {
   }
 
   async create<T>(options: QueueOptions): Promise<IPublisher<T>> {
-    this.connection = await connect({
-      hostname: this.coptions.endpoint.host,
-      password: this.coptions.credentials?.password,
-      username: this.coptions.credentials?.username,
-      port: this.coptions.endpoint.port,
-      vhost: this.coptions.arguments?.vhost,
-    })
+    if (this.connection === undefined) {
+      this.connection = await connect({
+        hostname: this.options.endpoint.host,
+        password: this.options.credentials?.password,
+        username: this.options.credentials?.username,
+        port: this.options.endpoint.port,
+        vhost: this.normalize(this.options.endpoint.path),
+      })
+    }
 
+    const opts = ObjectMerge.merge<QueueOptions>(options as any, { queue: this.options.name })
     const channel = await this.connection.openChannel()
-    const queue = await channel.declareQueue(options)
+    const queue = await channel.declareQueue(opts)
 
-    return new Publisher<T>(options, channel, queue)
+    return new Publisher<T>(opts, channel, queue)
+  }
+
+  private normalize(value: string = '/'): string {
+    return value.startsWith('/') ? value : `/${value}`
   }
 }
 
