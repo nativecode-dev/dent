@@ -9,7 +9,7 @@ test:
   script:
     - deno run --allow-net status-check/mod_run.ts //localhost:5672 //localhost:6379 http://localhost:5984
     - deno run --allow-env --allow-read --allow-write --unstable dent-cli/mod_run.ts refresh --log
-    - deno test -c tsconfig.json --allow-env --allow-read --allow-net --allow-write
+    - deno test -c tsconfig.json --allow-env --allow-read --allow-net --allow-write --unstable
   services:
     - couchdb:2
     - rabbitmq:3-management-alpine
@@ -24,7 +24,7 @@ publish:
   stage: publish
   script:
     - mkdir dist
-    - deno bundle -c tsconfig.json mod.ts dist/mod.ts
+    - deno bundle -c tsconfig.json --unstable mod.ts dist/mod.ts
   only:
     - master
   artifacts:
