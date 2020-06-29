@@ -160,10 +160,15 @@ export class UrlBuilder {
     return this
   }
 
-  withPath(path: string) {
+  withPath(...path: string[]) {
     this.options.endpoint = {
       ...this.options.endpoint,
-      path: this.options.endpoint.path ? join(this.options.endpoint.path, normalizePathString(path)) : path,
+      path: this.options.endpoint.path
+        ? this.options.endpoint.path
+            .split('/')
+            .concat(...path)
+            .join('/')
+        : path.join('/'),
     }
 
     return this
