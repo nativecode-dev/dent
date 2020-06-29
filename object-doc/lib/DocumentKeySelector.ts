@@ -1,5 +1,5 @@
 import { Document } from './Document.ts'
 
-export interface DocumentKey<T extends Document> {
+export interface DocumentKeySelector<T extends Document> {
   (doc: T): string
 }

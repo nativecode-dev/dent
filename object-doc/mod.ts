@@ -1,4 +1,6 @@
 export * from './lib/Document.ts'
 export * from './lib/DocumentCollection.ts'
-export * from './lib/DocumentKey.ts'
+export * from './lib/DocumentFindOptions.ts'
+export * from './lib/DocumentKeySelector.ts'
+export * from './lib/DocumentSelector.ts'
 export * from './lib/DocumentStore.ts'
