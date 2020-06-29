@@ -1,4 +1,4 @@
-import { ConnectorOptions, Essentials, ObjectMerge, UrlBuilder } from '../deps.ts'
+import { BError, Essentials, ObjectMerge, UrlBuilder } from '../deps.ts'
 
 import { HttpError } from './HttpError.ts'
 import { ResourceParams } from './ResourceParam.ts'
@@ -64,8 +64,7 @@ export abstract class Resource<T extends ResourceOptions> {
       const response = await this.response(route, method, params)
       return response.arrayBuffer()
     } catch (error) {
-      console.log(error)
-      throw error
+      throw new BError('[error:blob]', error)
     }
   }
 
@@ -78,8 +77,7 @@ export abstract class Resource<T extends ResourceOptions> {
       const response = await this.response(route, method, params, resource)
       return response.json()
     } catch (error) {
-      console.log(error)
-      throw error
+      throw new BError('[error:json]', error)
     }
   }
 
@@ -93,13 +91,17 @@ export abstract class Resource<T extends ResourceOptions> {
       body: body ? JSON.stringify(body) : undefined,
     }
 
-    const response = await fetch(url, request)
+    try {
+      const response = await fetch(url, request)
 
-    if (response.ok === false) {
-      throw new HttpError(request, response)
+      if (response.ok === false) {
+        throw new HttpError(request, response)
+      }
+
+      return response
+    } catch (error) {
+      throw new BError('[error:response]', error, { request })
     }
-
-    return response
   }
 
   protected setHeader(name: string, value: string): void {
@@ -111,8 +113,7 @@ export abstract class Resource<T extends ResourceOptions> {
       const response = await this.response(route, method, params)
       return response.text()
     } catch (error) {
-      console.log(error)
-      throw error
+      throw new BError('[error:text]', error)
     }
   }
 
