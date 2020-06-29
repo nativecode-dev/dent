@@ -156,11 +156,16 @@ export class UrlBuilder {
       const hasUsername = typeof this.options.credentials.username === 'string'
       this.builder.authenticated = hasPassword || hasUsername
     }
+
     return this
   }
 
   withPath(path: string) {
-    this.options.endpoint.path = this.options.endpoint.path ? join(this.options.endpoint.path, normalizePathString(path)) : path
+    this.options.endpoint = {
+      ...this.options.endpoint,
+      path: this.options.endpoint.path ? join(this.options.endpoint.path, normalizePathString(path)) : path,
+    }
+
     return this
   }
 
@@ -170,7 +175,7 @@ export class UrlBuilder {
   }
 
   withQuery(query: any) {
-    this.options.endpoint.query = ObjectMerge.merge({}, this.options.endpoint.query, query)
+    this.options.endpoint = { ...this.options.endpoint, query: ObjectMerge.merge({}, this.options.endpoint.query, query) }
     return this
   }
 
