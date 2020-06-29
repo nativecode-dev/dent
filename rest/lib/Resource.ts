@@ -118,7 +118,7 @@ export abstract class Resource<T extends ResourceOptions> {
 
   protected getRoute(route: string, params: ResourceParams = []): URL {
     const builder = new UrlBuilder({
-      arguments: this.options.connection.arguments,
+      arguments: this.options.connection.arguments || {},
       credentials: this.options.connection.credentials,
       endpoint: {
         host: this.options.connection.endpoint.host,
