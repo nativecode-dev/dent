@@ -15,10 +15,10 @@ test:
     - rabbitmq:3-management-alpine
     - redis:6-alpine
   variables:
-    COUCHDB_USER: admin
-    COUCHDB_PASSWORD: password
-    RABBITMQ_DEFAULT_USER: admin
-    RABBITMQ_DEFAULT_PASS: password
+    COUCHDB_USER: guest
+    COUCHDB_PASSWORD: guest
+    RABBITMQ_DEFAULT_USER: guest
+    RABBITMQ_DEFAULT_PASS: guest
 
 publish:
   stage: publish

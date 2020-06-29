@@ -15,7 +15,7 @@ function normalizePathString(value: string): string {
     .join('/')
 }
 
-function normalizePortNumber(protocol: string, value: number | string | undefined): number {
+function normalizePortNumber(value: number | string | undefined): number | undefined {
   if (typeof value === 'number') {
     return value
   }
@@ -23,23 +23,25 @@ function normalizePortNumber(protocol: string, value: number | string | undefine
   if (typeof value === 'string' && /[\d]+/g.test(value)) {
     return parseInt(value, 0)
   }
-
-  if (protocol === 'http:') {
-    return 80
-  }
-
-  if (protocol === 'https:') {
-    return 443
-  }
-
-  return 443
 }
 
-function normalizePortString(protocol: string, value: number | string | undefined): string {
-  return normalizePortNumber(protocol, value).toString()
+function normalizePortString(value: number | string | undefined): string {
+  const normalized = normalizePortNumber(value)
+
+  if (normalized) {
+    return normalized.toString()
+  }
+
+  return value?.toString() || ''
 }
 
-function normalizeProtocolString(value: string | undefined): string {
+function normalizeProtocolString(value: string | undefined, port?: number): string {
+  const { standard, protocol } = isStandardPort(port)
+
+  if (standard) {
+    return protocol
+  }
+
   if (value && value.endsWith(':')) {
     return value
   }
@@ -49,6 +51,26 @@ function normalizeProtocolString(value: string | undefined): string {
   }
 
   return ''
+}
+
+function isStandardPort(port: number | undefined): { standard: boolean; protocol: string } {
+  if (port === 21) {
+    return { standard: true, protocol: 'ftp:' }
+  }
+
+  if (port === 22) {
+    return { standard: true, protocol: 'ssh:' }
+  }
+
+  if (port === 80) {
+    return { standard: true, protocol: 'http:' }
+  }
+
+  if (port === 443) {
+    return { standard: true, protocol: 'https:' }
+  }
+
+  return { standard: false, protocol: '' }
 }
 
 function normalizeQueryObject(value: any): string[] {
@@ -86,7 +108,7 @@ function parseConnectorOptions(url: string): ConnectorOptions {
     endpoint: {
       host: normalizeHostString(host),
       path: normalizePathString(path),
-      port: normalizePortNumber(protocol, port),
+      port: normalizePortNumber(port),
       protocol,
       query: normalizeQueryString(query),
     },
@@ -167,8 +189,9 @@ export class UrlBuilder {
 
   toUrlParts(): string[] {
     const url = []
+    const { standard } = isStandardPort(this.options.endpoint.port)
 
-    const protocol = normalizeProtocolString(this.options.endpoint.protocol)
+    const protocol = normalizeProtocolString(this.options.endpoint.protocol, this.options.endpoint.port)
 
     if (protocol !== ':' && protocol !== '') {
       url.push(protocol, '//')
@@ -183,10 +206,9 @@ export class UrlBuilder {
 
     url.push(normalizeHostString(this.options.endpoint.host))
 
-    if (this.builder.includePort) {
-      const protocol = normalizeProtocolString(this.options.endpoint.protocol)
+    if (this.builder.includePort && standard === false && this.options.endpoint.port) {
       url.push(':')
-      url.push(normalizePortString(protocol, this.options.endpoint.port))
+      url.push(normalizePortString(this.options.endpoint.port))
     }
 
     if (this.options.endpoint.path) {

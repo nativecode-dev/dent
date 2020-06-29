@@ -12,7 +12,6 @@ const CONNECTION: ConnectorOptions = {
     host: 'localhost',
     path: '/',
     port: 443,
-    protocol: 'https',
     query: {},
   },
   name: 'test',
@@ -25,7 +24,7 @@ Deno.test('should get url from connection options', () => {
 
 Deno.test('should get url from connection options, with port', () => {
   const builder = new UrlBuilder(CONNECTION)
-  assertEquals(builder.withPort().toUrl(), 'https://localhost:443/')
+  assertEquals(builder.withPort().toUrl(), 'https://localhost/')
 })
 
 Deno.test('should get url from connection options, with authentication', () => {
@@ -35,7 +34,7 @@ Deno.test('should get url from connection options, with authentication', () => {
 
 Deno.test('should get url from connection options, with authentication and port', () => {
   const builder = new UrlBuilder(CONNECTION)
-  assertEquals(builder.withAuthentication().withPort().toUrl(), 'https://admin:g0ds3xl0v3@localhost:443/')
+  assertEquals(builder.withAuthentication().withPort().toUrl(), 'https://admin:g0ds3xl0v3@localhost/')
 })
 
 Deno.test('should parse url from hostname', () => {
@@ -44,8 +43,8 @@ Deno.test('should parse url from hostname', () => {
 })
 
 Deno.test('should parse url from hostname with port', () => {
-  const builder = UrlBuilder.parse('//localhost:80')
-  assertEquals(builder.withPort().toUrl(), 'localhost:80')
+  const builder = UrlBuilder.parse('//localhost:8080')
+  assertEquals(builder.withPort().toUrl(), 'localhost:8080')
 })
 
 Deno.test('should parse url', () => {
@@ -55,7 +54,7 @@ Deno.test('should parse url', () => {
 
 Deno.test('should parse url, output port', () => {
   const builder = UrlBuilder.parse('https://localhost')
-  assertEquals(builder.withPort().toUrl(), 'https://localhost:443')
+  assertEquals(builder.withPort().toUrl(), 'https://localhost')
 })
 
 Deno.test('should parse url with trailing slash', () => {
@@ -84,22 +83,22 @@ Deno.test('should parse url with query parameters', () => {
 })
 
 Deno.test('should parse url with port', () => {
-  const builder = UrlBuilder.parse('http://localhost:80/test?name=value&name2=value')
-  assertEquals(builder.withPort().toUrl(), 'http://localhost:80/test?name=value&name2=value')
+  const builder = UrlBuilder.parse('http://localhost:8080/test?name=value&name2=value')
+  assertEquals(builder.withPort().toUrl(), 'http://localhost:8080/test?name=value&name2=value')
 })
 
 Deno.test('should parse url with authentication', () => {
-  const builder = UrlBuilder.parse('http://admin:test@localhost:80/test?name=value&name2=value')
-  assertEquals(builder.withAuthentication().withPort().toUrl(), 'http://admin:test@localhost:80/test?name=value&name2=value')
+  const builder = UrlBuilder.parse('http://admin:test@localhost:8080/test?name=value&name2=value')
+  assertEquals(builder.withAuthentication().withPort().toUrl(), 'http://admin:test@localhost:8080/test?name=value&name2=value')
 })
 
 Deno.test('should parse url with authentication, no password', () => {
-  const builder = UrlBuilder.parse('http://admin@localhost:80/test?name=value&name2=value')
-  assertEquals(builder.withAuthentication().withPort().toUrl(), 'http://admin@localhost:80/test?name=value&name2=value')
+  const builder = UrlBuilder.parse('http://admin@localhost:8080/test?name=value&name2=value')
+  assertEquals(builder.withAuthentication().withPort().toUrl(), 'http://admin@localhost:8080/test?name=value&name2=value')
 })
 
 Deno.test('should parse url with authentication, no output', () => {
-  const builder = UrlBuilder.parse('http://admin:test@localhost:80/test?name=value&name2=value')
+  const builder = UrlBuilder.parse('http://admin:test@localhost:8080/test?name=value&name2=value')
   assertEquals(builder.toUrl(), 'http://localhost/test?name=value&name2=value')
 })
 
@@ -109,10 +108,10 @@ Deno.test('should parse url with authentication without port, no output', () => 
 })
 
 Deno.test('should parse url with authentication, with trailing slash', () => {
-  const builder = UrlBuilder.parse('http://admin:test@localhost:80/test?name=value&name2=value')
+  const builder = UrlBuilder.parse('http://admin:test@localhost:8080/test?name=value&name2=value')
   assertEquals(
     builder.withAuthentication().withPort().withTralingSlash().toUrl(),
-    'http://admin:test@localhost:80/test/?name=value&name2=value',
+    'http://admin:test@localhost:8080/test/?name=value&name2=value',
   )
 })
 
@@ -120,7 +119,7 @@ Deno.test('should parse ftp url with authentication, with trailing slash', () =>
   const builder = UrlBuilder.parse('ftp://admin:test@localhost:21/test?name=value&name2=value')
   assertEquals(
     builder.withAuthentication().withPort().withTralingSlash().toUrl(),
-    'ftp://admin:test@localhost:21/test/?name=value&name2=value',
+    'ftp://admin:test@localhost/test/?name=value&name2=value',
   )
 })
 
