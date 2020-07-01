@@ -2,7 +2,7 @@ import { getIP, getNetworkAddr } from '../deps.ts'
 
 export namespace SysInfo {
   export function hostname(fullhost: boolean = false): string {
-    const hostname = Deno.env.get('HOST') || Deno.hostname() || 'localhost'
+    const hostname = Deno.env.get('HOST') || Deno.env.get('HOSTNAME') || Deno.hostname() || 'localhost'
 
     if (fullhost) {
       return hostname
