@@ -1,56 +1,55 @@
-import { Essentials } from '../deps.ts'
+import { Essentials, deepmerge } from '../deps.ts'
 
+import { ArrayMergeType } from './ArrayMergeType.ts'
 import { ObjectMergeOptions, DefaultObjectMergeOptions } from './ObjectMergeOptions.ts'
 
 export namespace ObjectMerge {
-  function clone(source: any | any[], target: any, options: ObjectMergeOptions): any | any[] {
-    if (Array.isArray(source) && Array.isArray(target)) {
-      if (options.dedupe) {
-        return [...new Set(source.concat(target))]
+  const combine = (target: any[], source: any[], options: any) => {
+    const destination = target.slice()
+
+    source.forEach((item, index) => {
+      if (typeof destination[index] === 'undefined') {
+        destination[index] = options.cloneUnlessOtherwiseSpecified(item, options)
+      } else if (options.isMergeableObject(item)) {
+        destination[index] = merge(target[index], item, options)
+      } else if (target.indexOf(item) === -1) {
+        destination.push(item)
       }
-      return [...source, ...target]
-    } else if (Array.isArray(source)) {
-      return [...source]
-    }
+    })
 
-    if (typeof source !== 'object' || typeof target !== 'object') {
-      return source
-    }
+    return destination
+  }
 
-    if (source instanceof Date || target instanceof Date) {
-      return source
-    }
-
-    return Object.keys(source).reduce<any>((result, property) => {
-      const sourceValue = source[property]
-      const targetValue = result[property]
-
-      const sourceType = typeof sourceValue
-      const targetType = typeof targetValue
-
-      if (Array.isArray(sourceValue) && Array.isArray(targetValue)) {
-        if (options.dedupe) {
-          result[property] = [...new Set(targetValue.concat(sourceValue))]
-        } else {
-          result[property] = [...targetValue, ...sourceValue]
+  const dedupe = <T extends any>(source: T[], target: T[] = []): T[] => {
+    return source
+      .concat(target || [])
+      .filter((item, index, array) => array.indexOf(item) === index)
+      .reduce<T[]>((results, item) => {
+        if (results.includes(item)) {
+          return results
         }
-      } else if (Array.isArray(sourceValue)) {
-        result[property] = [...sourceValue]
-      } else if (sourceType === 'object' && targetType === 'object') {
-        result[property] = { ...clone({ ...sourceValue }, { ...targetValue }, options) }
-      } else if (sourceValue !== targetValue) {
-        result[property] = sourceValue
-      }
-
-      return target
-    }, target)
+        return [...results, item]
+      }, [])
   }
 
-  export function merge<T extends any>(...targets: Array<Essentials.DeepPartial<T>>): T {
-    return mergex(DefaultObjectMergeOptions, ...targets)
+  const overwrite = (_: any[], source: any[]) => source
+
+  function convert(options: ObjectMergeOptions) {
+    switch (options.array) {
+      case ArrayMergeType.combine:
+        return { arrayMerge: combine }
+      case ArrayMergeType.overwrite:
+        return { arrayMerge: overwrite }
+      default:
+        return { arrayMerge: dedupe }
+    }
   }
 
-  export function mergex<T extends any>(options: ObjectMergeOptions, ...targets: Array<Essentials.DeepPartial<T>>): T {
-    return targets.filter((x) => x !== undefined).reduce<T>((target, source) => clone(source, target, options), {} as T)
+  export function custom<T extends any>(options: ObjectMergeOptions, ...sources: Array<Essentials.DeepPartial<T>>): T {
+    return sources.filter((x) => x !== undefined).reduce<T>((target, source) => deepmerge(target, source, convert(options)), {} as T)
+  }
+
+  export function merge<T extends any>(...sources: Array<Essentials.DeepPartial<T>>): T {
+    return custom(DefaultObjectMergeOptions, ...sources)
   }
 }

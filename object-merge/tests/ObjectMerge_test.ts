@@ -1,5 +1,6 @@
 import { assertEquals } from '../test_deps.ts'
 import { ObjectMerge } from '../lib/ObjectMerge.ts'
+import { ArrayMergeType } from '../lib/ArrayMergeType.ts'
 
 const CONNECTION_EXPECTED = {
   connections: {
@@ -63,28 +64,28 @@ const CONNECTION_TARGETS = [
 ]
 
 Deno.test('should merge arrays', () => {
-  const merged: string[] = ObjectMerge.mergex({ dedupe: false }, ['a', 'b', 'c'], ['d', 'e', 'e'])
+  const merged: string[] = ObjectMerge.custom({ array: ArrayMergeType.combine }, ['a', 'b', 'c'], ['d', 'e', 'e'])
   assertEquals(merged.sort(), ['a', 'b', 'c', 'd', 'e', 'e'])
 })
 
 Deno.test('should dedupe arrays', () => {
-  const merged: string[] = ObjectMerge.mergex({ dedupe: true }, ['a', 'b', 'c', 'b'], ['c', 'd', 'e', 'e'])
+  const merged: string[] = ObjectMerge.merge(['a', 'b', 'c', 'b'], ['c', 'd', 'e', 'e'])
   assertEquals(merged.sort(), ['a', 'b', 'c', 'd', 'e'])
 })
 
 Deno.test('should overwrite dates', () => {
-  const merged: Date = ObjectMerge.merge(new Date(), new Date(2020, 1, 1))
-  assertEquals(merged.toDateString(), 'Sat Feb 01 2020')
+  const merged = ObjectMerge.merge({ date: new Date() }, { date: new Date(2020, 1, 1) })
+  assertEquals(merged.date.toDateString(), 'Sat Feb 01 2020')
 })
 
 Deno.test('should overwrite numbers', () => {
-  const merged = ObjectMerge.merge(123, 321)
-  assertEquals(merged, 321)
+  const merged = ObjectMerge.merge({ num: 123 }, { num: 321 })
+  assertEquals(merged, { num: 321 })
 })
 
 Deno.test('should overwrite strings', () => {
-  const merged = ObjectMerge.merge('test1', 'test2')
-  assertEquals(merged, 'test2')
+  const merged = ObjectMerge.merge({ str: 'test1' }, { str: 'test2' })
+  assertEquals(merged, { str: 'test2' })
 })
 
 Deno.test('should clone array properties', () => {

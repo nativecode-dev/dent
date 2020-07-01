@@ -1,7 +1,9 @@
+import { ArrayMergeType } from './ArrayMergeType.ts'
+
 export interface ObjectMergeOptions {
-  dedupe: boolean
+  array: ArrayMergeType
 }
 
 export const DefaultObjectMergeOptions: ObjectMergeOptions = {
-  dedupe: true,
+  array: ArrayMergeType.dedupe,
 }

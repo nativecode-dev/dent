@@ -6,7 +6,7 @@ export class Env {
   private readonly options: EnvOptions
 
   constructor(options: Essentials.DeepPartial<EnvOptions>) {
-    this.options = ObjectMerge.mergex<EnvOptions>({ dedupe: true }, options)
+    this.options = ObjectMerge.merge<EnvOptions>(options)
   }
 
   toObject(): any {
