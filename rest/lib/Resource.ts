@@ -95,7 +95,7 @@ export abstract class Resource<T extends ResourceOptions> {
       const response = await fetch(url, request)
 
       if (response.ok === false) {
-        throw new HttpError(request, response)
+        throw new BError(response.statusText, undefined, { response, request })
       }
 
       return response
