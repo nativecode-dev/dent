@@ -5,5 +5,5 @@ export interface ObjectMergeOptions {
 }
 
 export const DefaultObjectMergeOptions: ObjectMergeOptions = {
-  array: ArrayMergeType.dedupe,
+  array: ArrayMergeType.none,
 }

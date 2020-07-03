@@ -16,14 +16,13 @@ const CONNECTION_EXPECTED = {
       host: 'localhost',
       auth: {
         pass: 'admin',
-        user: 'adminpassword',
+        user: 'password123',
       },
     },
   },
   account: {
-    username: 'admin',
-    password: 'test',
     created: new Date(2020, 1, 1, 0, 0, 0),
+    logins: [{ username: 'admin' }, { username: 'root' }],
   },
 }
 
@@ -39,9 +38,8 @@ const CONNECTION_TARGETS = [
       },
     },
     account: {
-      username: 'root',
-      password: 'pass',
       created: new Date(2019, 1, 1, 0, 0, 0),
+      logins: [{ username: 'admin' }, { username: 'root' }],
     },
   },
   {
@@ -51,25 +49,24 @@ const CONNECTION_TARGETS = [
         host: 'localhost',
         auth: {
           pass: 'admin',
-          user: 'adminpassword',
+          user: 'password123',
         },
       },
     },
     account: {
-      username: 'admin',
-      password: 'test',
       created: new Date(2020, 1, 1, 0, 0, 0),
+      logins: [{ username: 'root' }],
     },
   },
 ]
 
 Deno.test('should merge arrays', () => {
-  const merged: string[] = ObjectMerge.custom({ array: ArrayMergeType.combine }, ['a', 'b', 'c'], ['d', 'e', 'e'])
+  const merged: string[] = ObjectMerge.merge(['a', 'b', 'c'], ['d', 'e', 'e'])
   assertEquals(merged.sort(), ['a', 'b', 'c', 'd', 'e', 'e'])
 })
 
 Deno.test('should dedupe arrays', () => {
-  const merged: string[] = ObjectMerge.merge(['a', 'b', 'c', 'b'], ['c', 'd', 'e', 'e'])
+  const merged: string[] = ObjectMerge.custom({ array: ArrayMergeType.dedupe }, ['a', 'b', 'c', 'b'], ['c', 'd', 'e', 'e'])
   assertEquals(merged.sort(), ['a', 'b', 'c', 'd', 'e'])
 })
 
@@ -123,7 +120,7 @@ Deno.test('should ovewrite string properties', () => {
 })
 
 Deno.test('should merge complex object', () => {
-  const merged = ObjectMerge.merge(...CONNECTION_TARGETS)
+  const merged = ObjectMerge.custom({ array: ArrayMergeType.dedupe }, ...CONNECTION_TARGETS)
   assertEquals(merged, CONNECTION_EXPECTED)
 })
 
