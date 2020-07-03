@@ -26,19 +26,19 @@ async function getCpuCount(): Promise<number> {
 
 export class Throttle {
   static all(tasks: ThrottleTask[]): Promise<any> {
-    return new Throttle().async(tasks)
+    return Throttle.async(tasks)
   }
 
-  async async(tasks: ThrottleTask[]): Promise<any> {
+  static async async(tasks: ThrottleTask[]): Promise<any> {
     const cpucount = await getCpuCount()
     return await all(tasks, { maxInProgress: cpucount })
   }
 
-  async serial(tasks: ThrottleTask[]): Promise<any> {
+  static async serial(tasks: ThrottleTask[]): Promise<any> {
     return await all(tasks, { maxInProgress: 1 })
   }
 
-  async sync(tasks: ThrottleTask[]): Promise<any> {
+  static async sync(tasks: ThrottleTask[]): Promise<any> {
     const cpucount = await getCpuCount()
     return await sync(tasks, { maxInProgress: cpucount })
   }
