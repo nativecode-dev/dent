@@ -18,39 +18,41 @@ export class Scheduler {
     unregister(this.state.jobs[name].id)
   }
 
-  fromSchedule(schedule: Schedule): string {
-    const scheduler = FUNCTIONS[schedule.type]
+  fromSchedule(schedule: Schedule): string | undefined {
+    if (schedule.enabled === undefined || schedule.enabled) {
+      const scheduler = FUNCTIONS[schedule.type]
 
-    const job = (this.state.jobs[schedule.name] = {
-      id: scheduler(schedule.schedule, async () => {
-        const job = this.state.jobs[schedule.name]
+      const job = (this.state.jobs[schedule.name] = {
+        id: scheduler(schedule.schedule, async () => {
+          const job = this.state.jobs[schedule.name]
 
-        if (job.state === ScheduleJobState.running) {
-          return
-        }
-
-        try {
-          job.state = ScheduleJobState.running
-
-          if (typeof job.schedule.command === 'string') {
-            await this.exec(job.schedule.schedule)
+          if (job.state === ScheduleJobState.running) {
+            return
           }
 
-          if (typeof job.schedule.command === 'function') {
-            await job.schedule.command()
-          }
-        } finally {
-          job.state = ScheduleJobState.stopped
-        }
-      }),
-      schedule,
-      state: ScheduleJobState.pending,
-    })
+          try {
+            job.state = ScheduleJobState.running
 
-    return job.id
+            if (typeof job.schedule.command === 'string') {
+              await this.exec(job.schedule.schedule)
+            }
+
+            if (typeof job.schedule.command === 'function') {
+              await job.schedule.command()
+            }
+          } finally {
+            job.state = ScheduleJobState.stopped
+          }
+        }),
+        schedule,
+        state: ScheduleJobState.pending,
+      })
+
+      return job.id
+    }
   }
 
-  async fromScheduleFile(filename: string): Promise<string> {
+  async fromScheduleFile(filename: string): Promise<string | undefined> {
     const contents = await Deno.readTextFile(filename)
     const schedule: Schedule = JSON.parse(contents)
     return this.fromSchedule(schedule)
