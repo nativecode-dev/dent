@@ -123,7 +123,7 @@ export class ObjectMap {
       value,
     }
 
-    if (included && (objvalue.type === 'object' || objvalue.type === 'array')) {
+    if (included && objvalue.value && (objvalue.type === 'object' || objvalue.type === 'array')) {
       objvalue.properties = Object.keys(objvalue.value).reduce<ObjectMapValue[]>((results, property) => {
         const map = this.map(objvalue, property)
 
