@@ -14,7 +14,7 @@ const CONNECTION = ObjectMerge.merge<ConnectorOptions>(
     },
     name: 'redis',
   },
-  envobj.test.redis,
+  envobj.test?.redis || {},
 )
 
 Deno.test('should create and retrieve value', async () => {
