@@ -62,7 +62,7 @@ const CONNECTION_TARGETS = [
 
 Deno.test('should merge arrays', () => {
   const merged: string[] = ObjectMerge.merge(['a', 'b', 'c'], ['d', 'e', 'e'])
-  assertEquals(merged.sort(), ['a', 'b', 'c', 'd', 'e', 'e'])
+  assertEquals(merged.sort(), ['a', 'b', 'c', 'd', 'e'])
 })
 
 Deno.test('should dedupe arrays', () => {
@@ -88,7 +88,7 @@ Deno.test('should overwrite strings', () => {
 Deno.test('should clone array properties', () => {
   const targets = [{ letters: ['a', 'b', 'c'] }, { letters: ['d'] }]
   const merged = ObjectMerge.merge(...targets)
-  assertEquals(merged, { letters: ['a', 'b', 'c', 'd'] })
+  assertEquals(merged, { letters: ['d', 'a', 'b', 'c'] })
 })
 
 Deno.test('should clone object properties', () => {
