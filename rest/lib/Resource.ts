@@ -1,6 +1,5 @@
-import { BError, Essentials, ObjectMerge, UrlBuilder } from '../deps.ts'
+import { BError, Essentials, ObjectMerge, SysInfo, UrlBuilder } from '../deps.ts'
 
-import { HttpError } from './HttpError.ts'
 import { ResourceParams } from './ResourceParam.ts'
 import { ResourceOptions } from './ResourceOptions.ts'
 import { ResourceParamType } from './ResourceParamType.ts'
@@ -83,6 +82,9 @@ export abstract class Resource<T extends ResourceOptions> {
 
   protected async response(route: string, method: string, params: ResourceParams = [], body?: any): Promise<Response> {
     const headers = this.headers(params)
+    headers.append('x-deno-rest-hostname', SysInfo.hostname())
+    headers.append('x-deno-rest-ipaddress', await SysInfo.ip_public())
+
     const url = this.getRoute(route, params).href
 
     const request: RequestInit = {
