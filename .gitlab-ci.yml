@@ -8,14 +8,12 @@ variables:
   GIT_SUBMODULE_STRATEGY: recursive
 
 .configure-publish:
-  stage: publish
-  script:
+  before_script:
     - source .ci-env.sh
     - bash .citools/setup-git ${BUILD_REPO_BRANCH} ${BUILD_REPO_GIT} ${BUILD_REPO_EMAIL}
     - bash .citools/setup-ssh ${BUILD_REPO_DOMAIN} ${BUILD_REPO_SSHKEY_PATH} ${BUILD_REPO_DOMAIN_SSH}
     - mkdir dist
     - deno bundle -c tsconfig.json --unstable mod.ts dist/mod.ts
-
 
 test:
   stage: test
@@ -35,6 +33,7 @@ test:
 
 prerelease:
   extends: .configure-publish
+  stage: publish
   script:
     - npx standard-version --prerelease beta
     - git push --follow-tags origin develop
@@ -46,6 +45,7 @@ prerelease:
 
 release:
   extends: .configure-publish
+  stage: publish
   script:
     - npx standard-version
     - git push --follow-tags origin master
