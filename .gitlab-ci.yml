@@ -41,7 +41,7 @@ release:
   script:
     - git config --global user.email "opensource@nativecode.com"
     - git config --global user.name "NativeCode Builder"
-    - git checkout develop
+    - git checkout master
     - mkdir dist
     - deno bundle -c tsconfig.json --unstable mod.ts dist/mod.ts
     - npx standard-version
