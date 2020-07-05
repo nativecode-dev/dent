@@ -1,4 +1,4 @@
-image: nativecode/deno:0.2.0
+image: nativecode/node-build:0.5.0
 
 stages:
   - test
@@ -20,11 +20,26 @@ test:
     RABBITMQ_DEFAULT_USER: guest
     RABBITMQ_DEFAULT_PASS: guest
 
-publish:
+prerelease:
   stage: publish
   script:
     - mkdir dist
     - deno bundle -c tsconfig.json --unstable mod.ts dist/mod.ts
+    - npx standard-version
+    - git push --follow-tags origin develop
+  only:
+    - develop
+  artifacts:
+    paths:
+      - dist
+
+release:
+  stage: publish
+  script:
+    - mkdir dist
+    - deno bundle -c tsconfig.json --unstable mod.ts dist/mod.ts
+    - npx standard-version
+    - git push --follow-tags origin master
   only:
     - master
   artifacts:
