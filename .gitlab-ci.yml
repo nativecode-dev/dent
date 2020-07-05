@@ -28,7 +28,7 @@ prerelease:
     - mkdir dist
     - deno bundle -c tsconfig.json --unstable mod.ts dist/mod.ts
     - npx standard-version
-    - git push --follow-tags origin develop
+    - git push
   only:
     - develop
   artifacts:
@@ -43,7 +43,7 @@ release:
     - mkdir dist
     - deno bundle -c tsconfig.json --unstable mod.ts dist/mod.ts
     - npx standard-version
-    - git push --follow-tags origin master
+    - git push
   only:
     - master
   artifacts:
