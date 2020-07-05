@@ -4,6 +4,9 @@ stages:
   - test
   - publish
 
+variables:
+  GIT_SUBMODULE_STRATEGY: recursive
+
 test:
   stage: test
   script:
@@ -23,9 +26,9 @@ test:
 prerelease:
   stage: publish
   script:
-    - git config --global user.email "opensource@nativecode.com"
-    - git config --global user.name "NativeCode Builder"
-    - git checkout develop
+    - source .ci-env.sh
+    - bash .citools/setup-git ${BUILD_REPO_BRANCH} ${BUILD_REPO_GIT} ${BUILD_REPO_EMAIL}
+    - bash .citools/setup-ssh ${BUILD_REPO_DOMAIN} ${BUILD_REPO_SSHKEY_PATH} ${BUILD_REPO_DOMAIN_SSH}
     - mkdir dist
     - deno bundle -c tsconfig.json --unstable mod.ts dist/mod.ts
     - npx standard-version
@@ -39,9 +42,9 @@ prerelease:
 release:
   stage: publish
   script:
-    - git config --global user.email "opensource@nativecode.com"
-    - git config --global user.name "NativeCode Builder"
-    - git checkout master
+    - source .ci-env.sh
+    - bash .citools/setup-git ${BUILD_REPO_BRANCH} ${BUILD_REPO_GIT} ${BUILD_REPO_EMAIL}
+    - bash .citools/setup-ssh ${BUILD_REPO_DOMAIN} ${BUILD_REPO_SSHKEY_PATH} ${BUILD_REPO_DOMAIN_SSH}
     - mkdir dist
     - deno bundle -c tsconfig.json --unstable mod.ts dist/mod.ts
     - npx standard-version
