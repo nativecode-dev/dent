@@ -31,7 +31,7 @@ prerelease:
     - bash .citools/setup-ssh ${BUILD_REPO_DOMAIN} ${BUILD_REPO_SSHKEY_PATH} ${BUILD_REPO_DOMAIN_SSH}
     - mkdir dist
     - deno bundle -c tsconfig.json --unstable mod.ts dist/mod.ts
-    - npx standard-version
+    - npx standard-version --prerelease beta
     - git push --follow-tags origin develop
   only:
     - develop
