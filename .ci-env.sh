@@ -3,7 +3,7 @@
 export BRANCH=${CI_COMMIT_REF_NAME}
 export DOMAIN="nativecode.net"
 export PROJECT="dent"
-export ORGANIZATION="opensource"
+export ORGANIZATION="nativecode"
 export SSH_KEY=${SSH_PRIVATE_KEY}
 
 export EMAIL="automaton+${PROJECT}@nativecode.com"
