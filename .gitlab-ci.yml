@@ -8,6 +8,10 @@ variables:
   GIT_SUBMODULE_STRATEGY: recursive
 
 .configure-publish:
+  stage: publish
+  artifacts:
+    paths:
+      - dist
   before_script:
     - mkdir dist
     - source .ci-env.sh
@@ -32,26 +36,18 @@ test:
 
 prerelease:
   extends: .configure-publish
-  stage: publish
   script:
     - deno bundle -c tsconfig.json --unstable mod.ts dist/mod.ts
     - npx standard-version --prerelease beta
     - git push --follow-tags origin develop
   only:
     - develop
-  artifacts:
-    paths:
-      - dist
 
 release:
   extends: .configure-publish
-  stage: publish
   script:
     - deno bundle -c tsconfig.json --unstable mod.ts dist/mod.ts
     - npx standard-version
     - git push --follow-tags origin master
   only:
     - master
-  artifacts:
-    paths:
-      - dist
