@@ -1,4 +1,4 @@
-import { ObjectMerge, Subject, Subscription } from '../deps.ts'
+import { ObjectMerge, RxJS } from '../deps.ts'
 
 import { createMessage } from './CreateMessage.ts'
 import { LincolnMessage } from './LincolnMessage.ts'
@@ -11,10 +11,10 @@ const DefaultOptions: Partial<LincolnOptions> = {
   namespaceSeparator: ':',
 }
 
-export class Lincoln extends Subject<LincolnEnvelope> {
+export class Lincoln extends RxJS.Subject<LincolnEnvelope> {
   private readonly namespace: string[]
   private readonly options: LincolnOptions
-  private readonly subscriptions: Subscription[] = []
+  private readonly subscriptions: RxJS.Subscription[] = []
 
   constructor(options: Partial<LincolnOptions>, private readonly transformers: Set<LincolnLogTransform> = new Set()) {
     super()

@@ -1,10 +1,10 @@
-import { Subscription } from '../deps.ts'
+import { RxJS } from '../deps.ts'
 
 import { Lincoln } from './Lincoln.ts'
 import { LincolnEnvelope } from './LincolnEnvelope.ts'
 
 export abstract class LincolnLog {
-  private readonly subscription: Subscription
+  private readonly subscription: RxJS.Subscription
 
   constructor(lincoln: Lincoln) {
     this.subscription = lincoln.subscribe(

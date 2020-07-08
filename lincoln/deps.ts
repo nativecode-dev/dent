@@ -1,4 +1,4 @@
-export * from 'https://raw.githubusercontent.com/DenoBRComunitty/rxjs/master/mod.ts'
+export * as RxJS from 'https://raw.githubusercontent.com/DenoBRComunitty/rxjs/master/mod.ts'
 
-export * from '../object-map/mod.ts'
-export * from '../object-merge/mod.ts'
+export { ObjectMap } from '../object-map/mod.ts'
+export { ObjectMerge } from '../object-merge/mod.ts'
