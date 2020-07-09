@@ -1,13 +1,31 @@
-import { DentExplorer } from './DentExplorer.ts'
-import { DentWatcher } from './DentWatcher.ts'
+import { Essentials, ObjectMerge } from '../deps.ts'
+
+import { DentOptions } from './DentOptions.ts'
+import { DentCommandExec } from './DentCommandExec.ts'
 
 export class Dent {
-  protected readonly explorer: DentExplorer = new DentExplorer()
+  private readonly commands = new Map<string, DentCommandExec>()
+  private readonly options: DentOptions
 
-  async exec() {
-    const { config, module } = await this.explorer.explore(Deno.cwd())
+  constructor(options: Essentials.DeepPartial<DentOptions> = {}) {
+    this.options = ObjectMerge.merge<DentOptions>(options)
+  }
 
-    const watcher = new DentWatcher(config, module)
-    await watcher.start()
+  exec(name: string, args: DentOptions): Promise<void> {
+    const executor = this.commands.get(name)
+
+    if (executor) {
+      return executor(args)
+    }
+
+    return Promise.resolve(undefined)
+  }
+
+  exists(name: string): boolean {
+    return this.commands.has(name)
+  }
+
+  register(name: string, exec: DentCommandExec) {
+    this.commands.set(name, exec)
   }
 }

@@ -1,15 +1,15 @@
-import { exists, load, path, Ignore, DentModule, DentModuleFile, DentConfig, DentModuleType, ObjectMerge } from '../deps.ts'
+import { Ignore, DentModule, DentModuleFile, DentConfig, DentModuleType, ObjectMerge, Path, exists, load } from '../deps.ts'
 
 export class DentExplorer {
   async explore(directory: string): Promise<{ config: DentConfig; module: DentModule }> {
-    const config = await this.getDenoYaml(path.join(directory, '.deno.yaml'))
+    const config = await this.getDenoYaml(Path.join(directory, '.deno.yaml'))
     const ignore: Ignore = config.ignore.patterns.reduce((result, current) => result.add(current), new Ignore())
 
     const current: DentModule = {
       files: [],
       modules: [],
-      name: path.basename(directory),
-      path: path.dirname(directory),
+      name: Path.basename(directory),
+      path: Path.dirname(directory),
     }
 
     for await (const entry of Deno.readDir(directory)) {
@@ -18,7 +18,7 @@ export class DentExplorer {
       }
 
       if (entry.isDirectory) {
-        const { module } = await this.explore(path.join(directory, entry.name))
+        const { module } = await this.explore(Path.join(directory, entry.name))
         module.modules.push(module)
         continue
       }
@@ -46,7 +46,7 @@ export class DentExplorer {
       return DentModuleType.test
     }
 
-    if (config.extensions.code.includes(path.extname(name))) {
+    if (config.extensions.code.includes(Path.extname(name))) {
       return DentModuleType.code
     }
 

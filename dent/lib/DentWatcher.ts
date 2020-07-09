@@ -1,4 +1,4 @@
-import { debounce, exec, OutputMode } from '../deps.ts'
+import { debounce, OutputMode, exec } from '../deps.ts'
 
 import { DentModule, DentConfig } from '../../dent-core/mod.ts'
 

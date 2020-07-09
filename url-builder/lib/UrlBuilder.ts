@@ -189,6 +189,10 @@ export class UrlBuilder {
     return this
   }
 
+  toString(): string {
+    return this.toUrl()
+  }
+
   toURL(): URL {
     return new URL(this.toUrl())
   }
