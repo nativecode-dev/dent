@@ -18,7 +18,7 @@ before_script:
   artifacts:
     paths:
       - dist
-  before_script:
+  script:
     - mkdir dist
     - source .ci-env.sh
     - bash .citools/setup-git ${BUILD_REPO_BRANCH} ${BUILD_REPO_GIT} ${BUILD_REPO_EMAIL}
@@ -42,7 +42,7 @@ test:
 
 prerelease:
   extends: .configure-publish
-  script:
+  after_script:
     - deno bundle --unstable mod.ts dist/mod.ts
     - dent tag-release
     - git push origin --tags
@@ -51,7 +51,7 @@ prerelease:
 
 release:
   extends: .configure-publish
-  script:
+  after_script:
     - deno bundle --unstable mod.ts dist/mod.ts
     - dent tag-release
     - git push origin --tags
