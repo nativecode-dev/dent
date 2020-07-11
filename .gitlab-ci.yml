@@ -32,7 +32,6 @@ test:
     - status-check //localhost:5672 //localhost:6379 http://localhost:5984
     - deno run --allow-env --allow-read --allow-write --unstable dent-cli/mod_run.ts refresh --log
     - deno test -c tsconfig.json --allow-env --allow-read --allow-net --allow-write --unstable
-  after_script:
     - dent tag-release
   services:
     - couchdb:2
