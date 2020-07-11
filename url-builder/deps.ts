@@ -1,4 +1,4 @@
-export { join } from 'https://deno.land/std@0.59.0/path/mod.ts'
+export { join } from 'https://deno.land/std@0.60.0/path/mod.ts'
 
 export { ObjectMerge } from '../object-merge/mod.ts'
 export { Essentials } from '../ts-types/mod.ts'

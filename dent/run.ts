@@ -1,18 +1,17 @@
-import { parse } from './deps.ts'
+import { Throttle, parse } from './deps.ts'
 
 import { Dent } from './lib/Dent.ts'
-import { DentOptions } from './lib/DentOptions.ts'
 import { TagRelease } from './lib/Semver/TagRelease.ts'
 import { CommitParser } from './lib/Semver/CommitParser.ts'
 
-const args = parse(Deno.args) as DentOptions
+const parsed = parse(Deno.args, { boolean: true })
 
 const dent = new Dent()
 dent.register('commit-parser', CommitParser)
 dent.register('tag-release', TagRelease)
 
-args._.map((command) => {
-  if (dent.exists(command)) {
-    dent.exec(command, args)
-  }
-})
+const tasks = parsed._.reduce<string[]>((results, current) => (typeof current === 'string' ? [...results, current] : results), [])
+  .filter((command) => dent.exists(command))
+  .map((command) => () => dent.exec(command, parsed))
+
+await Throttle.serial(tasks)

@@ -1,4 +1,4 @@
-import { parse } from 'https://deno.land/std@0.59.0/flags/mod.ts'
+import { parse } from 'https://deno.land/std@0.60.0/flags/mod.ts'
 
 import { Lincoln, LincolnLogDebug, ObjectMerge, createLogger, createScrubTransformer } from './deps.ts'
 import { Crawler } from './mod.ts'

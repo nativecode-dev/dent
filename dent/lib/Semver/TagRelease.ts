@@ -26,7 +26,6 @@ export async function TagRelease(args: TagReleaseOptions): Promise<undefined> {
   const branch = await git.command('rev-parse --abbrev-ref HEAD')
   const nextver = new SemVer(await CommitParser(args))
   const tagver = new SemVer(await git.describe())
-  console.log(args, args['dry-run'])
 
   if (tagver.compare(nextver) === 0) {
     return
@@ -39,9 +38,13 @@ export async function TagRelease(args: TagReleaseOptions): Promise<undefined> {
     console.log('[tag-release]', ['v', version.format()].join(''))
   }
 
-  if (args['dry-run'] === false) {
-    // const pushed = await git.command('git push origin --tags')
-    // console.log(pushed)
+  if (args['dry-run']) {
+    console.log('[dry-run]')
+    return
   }
+
+  const pushed = await git.command('git push origin --tags')
+  console.log(pushed)
+
   return
 }
