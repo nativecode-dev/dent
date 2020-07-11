@@ -28,6 +28,7 @@ export async function TagRelease(args: TagReleaseOptions): Promise<undefined> {
   const tagver = new SemVer(await git.describe())
 
   if (tagver.compare(nextver) === 0) {
+    console.log('[tag-release]', 'no version change', branch)
     return
   }
 
