@@ -33,7 +33,7 @@ export async function TagRelease(args: TagReleaseOptions): Promise<undefined> {
 
   const version = ['v', semver(branch, nextver).format()].join('')
 
-  if (args['dry-run'] === false) {
+  if (args['dry-run'] !== true) {
     await git.command(`tag ${version}`)
     await git.command('push origin --tags')
   }
