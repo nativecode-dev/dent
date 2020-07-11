@@ -33,18 +33,12 @@ export async function TagRelease(args: TagReleaseOptions): Promise<undefined> {
 
   const version = ['v', semver(branch, nextver).format()].join('')
 
-  if (branch === 'master' || branch === 'develop') {
-    if (args['dry-run'] === false) {
-      await git.command(`tag ${version}`)
-    }
-
-    console.log('[tag-release]', branch, version)
-  }
-
   if (args['dry-run'] === false) {
-    await git.command(' push origin --tags')
-    console.log('[push]', branch)
+    await git.command(`tag ${version}`)
+    await git.command('push origin --tags')
   }
+
+  console.log('[tag-release]', branch, version)
 
   return
 }
