@@ -8,8 +8,9 @@ variables:
   GIT_SUBMODULE_STRATEGY: recursive
 
 before_script:
-  - deno install --allow-net --name status-check status-check/mod_run.ts
+  - deno install --allow-net --name status-check status-check/run.ts
   - deno install --allow-run --name dent dent/run.ts
+  - echo "export PATH=/root/.deno/bin:$PATH" >> $HOME/.bashrc
 
 .configure-publish:
   stage: publish
@@ -31,7 +32,7 @@ test:
     - deno run --allow-env --allow-read --allow-write --unstable dent-cli/mod_run.ts refresh --log
     - deno test -c tsconfig.json --allow-env --allow-read --allow-net --allow-write --unstable
   after_script:
-    - deno run --allow-run dent/mod.ts -- commit-parser
+    - dent tag-release
   services:
     - couchdb:2
     - rabbitmq:3-management-alpine
@@ -46,7 +47,6 @@ prerelease:
   extends: .configure-publish
   script:
     - deno bundle -c tsconfig.json --unstable mod.ts dist/mod.ts
-    - dent tag-release
   only:
     - develop
 
@@ -54,6 +54,5 @@ release:
   extends: .configure-publish
   script:
     - deno bundle -c tsconfig.json --unstable mod.ts dist/mod.ts
-    - dent tag-release
   only:
     - master
