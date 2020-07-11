@@ -1,4 +1,4 @@
-import { Essentials, ObjectMerge } from '../deps.ts'
+import { Essentials, ObjectMerge, SemVer, prerelease } from '../deps.ts'
 
 import { DefaultGitOptions, GitExec, GitOptions } from './Helpers/GitExec.ts'
 
@@ -17,8 +17,20 @@ export class Git {
     return await this.execute('log', `${tag}..HEAD`, '--oneline')
   }
 
-  async lasttag(): Promise<string> {
-    return await this.execute('describe', '--tags', '--abbrev=0')
+  async lasttag(includePreRelease: boolean): Promise<string> {
+    const tags = await this.execute('tag')
+
+    const version = tags
+      .split('\n')
+      .map((version) => new SemVer(version))
+      .reduce<string>((version, current) => {
+        if (prerelease(current) !== null && includePreRelease) {
+          return current.format()
+        }
+        return version
+      }, '0.0.0')
+
+    return `v${version}`
   }
 
   async push() {

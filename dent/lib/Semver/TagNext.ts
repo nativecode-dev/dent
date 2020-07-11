@@ -3,8 +3,11 @@ import { SemVer } from '../../deps.ts'
 import { Git } from '../Git.ts'
 import { DentOptions } from '../DentOptions.ts'
 import { DentConstants } from '../DentConstants.ts'
+import { BranchVersion } from '../Helpers/BranchVersion.ts'
 
-interface CommitParseOptions extends DentOptions {}
+interface CommitParseOptions extends DentOptions {
+  branch?: string
+}
 
 const git = new Git()
 
@@ -23,8 +26,8 @@ const COMMIT_VALUE: { [key: string]: number } = {
   test: 0,
 }
 
-export async function TagCommit(args: CommitParseOptions): Promise<string> {
-  const commitsSinceTag = async (tag: string) => {
+export async function TagNext(args: CommitParseOptions): Promise<string> {
+  const commits_since = async (tag: string) => {
     const commits = await git.commits(tag)
 
     return commits
@@ -43,26 +46,11 @@ export async function TagCommit(args: CommitParseOptions): Promise<string> {
       .reduce<number>((result, current) => (current > result ? current : result), 0)
   }
 
-  const tag = await git.lasttag()
-  const type = await commitsSinceTag(tag)
-  const version = new SemVer(tag, { includePrerelease: true })
+  const branch = await git.branch()
+  const tag = await git.lasttag(branch !== 'master')
+  const type = await commits_since(tag)
+  const version = new SemVer(tag, { includePrerelease: branch !== 'master' })
+  const final = BranchVersion(branch, version)
 
-  switch (type) {
-    case 3:
-      version.inc('major')
-      break
-
-    case 2:
-      version.inc('minor')
-      break
-
-    case 1:
-      version.inc('patch')
-      break
-
-    default:
-      break
-  }
-
-  return `v${version}`
+  return `v${final.format()}`
 }
