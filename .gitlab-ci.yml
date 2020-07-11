@@ -33,7 +33,7 @@ test:
   except:
     - tags
 
-release:
+publish:
   extends:
     - .binaries
   stage: publish
