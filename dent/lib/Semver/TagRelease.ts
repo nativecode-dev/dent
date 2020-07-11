@@ -42,7 +42,7 @@ export async function TagRelease(args: TagReleaseOptions): Promise<undefined> {
   }
 
   if (args['dry-run'] === false) {
-    await git.command('git push origin --tags')
+    await git.command(' push origin --tags')
     console.log('[push]', branch)
   }
 
