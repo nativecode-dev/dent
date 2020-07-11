@@ -11,6 +11,7 @@ before_script:
   - deno install --allow-net --name status-check status-check/run.ts
   - deno install --allow-run --name dent dent/run.ts
   - echo "export PATH=/root/.deno/bin:$PATH" >> $HOME/.bashrc
+  - source $HOME/.bashrc
 
 .configure-publish:
   stage: publish
