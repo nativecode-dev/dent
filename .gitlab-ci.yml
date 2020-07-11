@@ -18,11 +18,15 @@ before_script:
   artifacts:
     paths:
       - dist
-  script:
+  before_script:
     - mkdir dist
     - source .ci-env.sh
     - bash .citools/setup-git ${BUILD_REPO_BRANCH} ${BUILD_REPO_GIT} ${BUILD_REPO_EMAIL}
     - bash .citools/setup-ssh ${BUILD_REPO_DOMAIN} ${BUILD_REPO_SSHKEY_PATH} ${BUILD_REPO_DOMAIN_SSH}
+    - deno install --allow-net --name status-check status-check/run.ts
+    - deno install --allow-run --name dent dent/run.ts
+    - echo "export PATH=/root/.deno/bin:$PATH" >> $HOME/.bashrc
+    - source $HOME/.bashrc
 
 test:
   stage: test
@@ -42,7 +46,7 @@ test:
 
 prerelease:
   extends: .configure-publish
-  after_script:
+  script:
     - deno bundle --unstable mod.ts dist/mod.ts
     - dent tag-release
     - git push origin --tags
@@ -51,7 +55,7 @@ prerelease:
 
 release:
   extends: .configure-publish
-  after_script:
+  script:
     - deno bundle --unstable mod.ts dist/mod.ts
     - dent tag-release
     - git push origin --tags
