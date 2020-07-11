@@ -11,7 +11,7 @@ export class Dent {
     this.options = ObjectMerge.merge<DentOptions>(options)
   }
 
-  exec(name: string, args: DentOptions): Promise<string | undefined> {
+  exec(name: string, args: DentOptions): Promise<string | undefined | void> {
     const executor = this.commands.get(name)
 
     if (executor) {

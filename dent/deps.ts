@@ -9,7 +9,7 @@ export { writeJson } from 'https://deno.land/std@0.60.0/fs/write_json.ts'
 
 export { config } from 'https://deno.land/x/dotenv@v0.4.3/mod.ts'
 export { load } from 'https://deno.land/x/js_yaml_port/js-yaml.js'
-export { OutputMode, exec } from 'https://deno.land/x/exec/mod.ts'
+export { IExecResponse, OutputMode, exec } from 'https://deno.land/x/exec/mod.ts'
 
 export { ObjectMap } from '../object-map/mod.ts'
 export { ObjectMerge } from '../object-merge/mod.ts'
