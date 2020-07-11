@@ -31,20 +31,20 @@ export async function TagRelease(args: TagReleaseOptions): Promise<undefined> {
     return
   }
 
-  const version = semver(branch, nextver)
+  const version = ['v', semver(branch, nextver).format()].join('')
 
-  if (branch === 'master') {
-    await git.command(`tag ${version}`)
-    console.log('[tag-release]', ['v', version.format()].join(''))
+  if (branch === 'master' || branch === 'develop') {
+    if (args['dry-run'] === false) {
+      await git.command(`tag ${version}`)
+    }
+
+    console.log('[tag-release]', branch, version)
   }
 
-  if (args['dry-run']) {
-    console.log('[dry-run]')
-    return
+  if (args['dry-run'] === false) {
+    await git.command('git push origin --tags')
+    console.log('[push]', branch)
   }
-
-  const pushed = await git.command('git push origin --tags')
-  console.log(pushed)
 
   return
 }
