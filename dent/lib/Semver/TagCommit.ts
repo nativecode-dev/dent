@@ -25,7 +25,7 @@ const COMMIT_VALUE: { [key: string]: number } = {
 
 export async function TagCommit(args: CommitParseOptions): Promise<string> {
   const commitsSinceTag = async (tag: string) => {
-    const commits = await git.command(`log ${tag}..HEAD --oneline`)
+    const commits = await git.commits(tag)
 
     return commits
       .split('\n')
