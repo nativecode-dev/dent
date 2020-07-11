@@ -16,7 +16,7 @@ const CONNECTION = ObjectMerge.merge<ConnectorOptions>(
     },
     name: 'rabbitmq',
   },
-  envobj.test.rabbitmq,
+  envobj.test?.rabbitmq || {},
 )
 
 const QUEUE = {
