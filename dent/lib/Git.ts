@@ -1,10 +1,6 @@
 import { Essentials, ObjectMerge } from '../deps.ts'
 
-import { DefaultGitOptions, GitExec } from './Helpers/GitExec.ts'
-
-export interface GitOptions {
-  executable: string
-}
+import { DefaultGitOptions, GitExec, GitOptions } from './Helpers/GitExec.ts'
 
 export class Git {
   private readonly options: GitOptions
