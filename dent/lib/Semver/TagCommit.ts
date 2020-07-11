@@ -24,7 +24,7 @@ const COMMIT_VALUE: { [key: string]: number } = {
 }
 
 export async function TagCommit(args: CommitParseOptions): Promise<string> {
-  const commitsSinceTag = async (tag: string) => {
+  const commits_since = async (tag: string) => {
     const commits = await git.commits(tag)
 
     return commits
@@ -44,7 +44,7 @@ export async function TagCommit(args: CommitParseOptions): Promise<string> {
   }
 
   const tag = await git.lasttag()
-  const type = await commitsSinceTag(tag)
+  const type = await commits_since(tag)
   const version = new SemVer(tag, { includePrerelease: true })
 
   switch (type) {
