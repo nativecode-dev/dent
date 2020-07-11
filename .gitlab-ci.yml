@@ -19,7 +19,6 @@ test:
   stage: test
   script:
     - status-check //localhost:5672 //localhost:6379 http://localhost:5984
-    - deno run --allow-env --allow-read --allow-write --unstable dent-cli/run.ts refresh --log
     - deno test --allow-env --allow-read --allow-net --allow-write --unstable
   services:
     - couchdb:2
