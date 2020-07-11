@@ -27,6 +27,7 @@ async function commitsSinceTag(tag: string) {
   const commits = await git.command(`log ${tag}..HEAD --oneline`)
 
   return commits
+    .split('\n')
     .map((commit) => {
       const regex = new RegExp(DentConstants.commit)
       const matches = regex.exec(commit)
@@ -44,7 +45,7 @@ async function commitsSinceTag(tag: string) {
 export async function CommitParser(args: CommitParseOptions): Promise<string> {
   const tags = await git.describe()
 
-  const version = await tags.reduce<Promise<string | null>>(async (version, tag) => {
+  const version = await tags.split('\n').reduce<Promise<string | null>>(async (version, tag) => {
     const original = new SemVer(tag, { includePrerelease: true })
     const type = await commitsSinceTag(tag)
     switch (type) {

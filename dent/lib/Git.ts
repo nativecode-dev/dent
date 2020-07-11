@@ -17,17 +17,17 @@ export class Git {
     this.options = ObjectMerge.merge<GitOptions>(DefaultGitOptions, options)
   }
 
-  async command(command: string): Promise<string[]> {
+  async command(command: string): Promise<string> {
     return await this.execute(command)
   }
 
-  async describe(): Promise<string[]> {
+  async describe(): Promise<string> {
     const command = this.subcommand('describe --tags --abbrev=0')
     const response = await exec(command, { output: OutputMode.Capture })
-    return response.output.split('\n')
+    return response.output
   }
 
-  async help(command?: string): Promise<string[]> {
+  async help(command?: string): Promise<string> {
     if (command) {
       const cmd = [this.options.executable, '--help'].join(' ')
       return await this.execute(cmd)
@@ -37,12 +37,12 @@ export class Git {
     return await this.execute(cmd)
   }
 
-  private async execute(command: string): Promise<string[]> {
+  private async execute(command: string): Promise<string> {
     const cmd = [this.options.executable, command].join(' ')
     const response = await exec(cmd, { output: OutputMode.Capture })
 
     if (response.status.success) {
-      return response.output.split('\n')
+      return response.output
     }
 
     throw new BError(`error executing ${command}: ${response.status.code}`)

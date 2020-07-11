@@ -14,18 +14,6 @@ variables:
     - echo "export PATH=/root/.deno/bin:$PATH" >> $HOME/.bashrc
     - source $HOME/.bashrc
 
-.configure-publish:
-  stage: publish
-  artifacts:
-    paths:
-      - dist
-  script:
-    - mkdir dist
-    - source .ci-env.sh
-    - bash .citools/setup-git ${BUILD_REPO_BRANCH} ${BUILD_REPO_GIT} ${BUILD_REPO_EMAIL}
-    - bash .citools/setup-ssh ${BUILD_REPO_DOMAIN} ${BUILD_REPO_SSHKEY_PATH} ${BUILD_REPO_DOMAIN_SSH}
-    - deno bundle --unstable mod.ts dist/mod.ts
-
 test:
   extends: .binaries
   stage: test
@@ -43,22 +31,21 @@ test:
     RABBITMQ_DEFAULT_USER: guest
     RABBITMQ_DEFAULT_PASS: guest
 
-prerelease:
+release:
   extends:
     - .binaries
-    - .configure-publish
-  after_script:
+  stage: publish
+  artifacts:
+    paths:
+      - dist
+  script:
+    - mkdir dist
+    - source .ci-env.sh
+    - bash .citools/setup-git ${BUILD_REPO_BRANCH} ${BUILD_REPO_GIT} ${BUILD_REPO_EMAIL}
+    - bash .citools/setup-ssh ${BUILD_REPO_DOMAIN} ${BUILD_REPO_SSHKEY_PATH} ${BUILD_REPO_DOMAIN_SSH}
+    - deno bundle --unstable mod.ts dist/mod.ts
     - dent tag-release prerelease
     - git push origin --tags
   only:
     - develop
-
-release:
-  extends:
-    - .binaries
-    - .configure-publish
-  after_script:
-    - dent tag-release
-    - git push origin --tags
-  only:
     - master
