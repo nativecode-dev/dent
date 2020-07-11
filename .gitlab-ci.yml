@@ -32,7 +32,6 @@ test:
     - status-check //localhost:5672 //localhost:6379 http://localhost:5984
     - deno run --allow-env --allow-read --allow-write --unstable dent-cli/mod_run.ts refresh --log
     - deno test --allow-env --allow-read --allow-net --allow-write --unstable
-    - dent tag-release
   services:
     - couchdb:2
     - rabbitmq:3-management-alpine
@@ -47,6 +46,8 @@ prerelease:
   extends: .configure-publish
   script:
     - deno bundle --unstable mod.ts dist/mod.ts
+    - dent tag-release
+    - git push origin --tags
   only:
     - develop
 
@@ -54,5 +55,7 @@ release:
   extends: .configure-publish
   script:
     - deno bundle --unstable mod.ts dist/mod.ts
+    - dent tag-release
+    - git push origin --tags
   only:
     - master
