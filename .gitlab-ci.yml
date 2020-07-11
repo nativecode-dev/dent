@@ -7,6 +7,10 @@ stages:
 variables:
   GIT_SUBMODULE_STRATEGY: recursive
 
+before_script:
+  - deno install --allow-net --name status-check status-check/mod_run.ts
+  - deno install --allow-run --name dent dent/run.ts
+
 .configure-publish:
   stage: publish
   artifacts:
@@ -17,13 +21,17 @@ variables:
     - source .ci-env.sh
     - bash .citools/setup-git ${BUILD_REPO_BRANCH} ${BUILD_REPO_GIT} ${BUILD_REPO_EMAIL}
     - bash .citools/setup-ssh ${BUILD_REPO_DOMAIN} ${BUILD_REPO_SSHKEY_PATH} ${BUILD_REPO_DOMAIN_SSH}
+  after_script:
+    - git push origin --tags
 
 test:
   stage: test
   script:
-    - deno run --allow-net status-check/mod_run.ts //localhost:5672 //localhost:6379 http://localhost:5984
+    - status-check //localhost:5672 //localhost:6379 http://localhost:5984
     - deno run --allow-env --allow-read --allow-write --unstable dent-cli/mod_run.ts refresh --log
     - deno test -c tsconfig.json --allow-env --allow-read --allow-net --allow-write --unstable
+  after_script:
+    - deno run --allow-run dent/mod.ts -- commit-parser
   services:
     - couchdb:2
     - rabbitmq:3-management-alpine
@@ -38,8 +46,7 @@ prerelease:
   extends: .configure-publish
   script:
     - deno bundle -c tsconfig.json --unstable mod.ts dist/mod.ts
-    - npx standard-version --prerelease beta
-    - git push --follow-tags origin develop
+    - dent tag-release
   only:
     - develop
 
@@ -47,7 +54,6 @@ release:
   extends: .configure-publish
   script:
     - deno bundle -c tsconfig.json --unstable mod.ts dist/mod.ts
-    - npx standard-version
-    - git push --follow-tags origin master
+    - dent tag-release
   only:
     - master

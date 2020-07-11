@@ -22,7 +22,7 @@ export class Git {
   }
 
   async describe(): Promise<string[]> {
-    const command = this.subcommand('describe')
+    const command = this.subcommand('describe --tags --abbrev=0')
     const response = await exec(command, { output: OutputMode.Capture })
     return response.output.split('\n')
   }
@@ -39,7 +39,6 @@ export class Git {
 
   private async execute(command: string): Promise<string[]> {
     const cmd = [this.options.executable, command].join(' ')
-    console.log(cmd)
     const response = await exec(cmd, { output: OutputMode.Capture })
 
     if (response.status.success) {
