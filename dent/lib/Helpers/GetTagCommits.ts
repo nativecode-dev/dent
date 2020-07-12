@@ -1,3 +1,5 @@
+import { ObjectMerge } from '../../deps.ts'
+
 import { GIT } from '../Git.ts'
 import { DentConstants } from '../DentConstants.ts'
 
@@ -6,6 +8,10 @@ export interface Commit {
   scope: string
   type: string
   value: number
+}
+
+interface Options {
+  tag: string
 }
 
 const COMMIT_VALUE: { [key: string]: number } = {
@@ -23,8 +29,9 @@ const COMMIT_VALUE: { [key: string]: number } = {
   test: 0,
 }
 
-export async function GetTagCommits(tag: string): Promise<Commit[]> {
-  const commits = await GIT.commits(tag)
+export async function GetTagCommits(options: Partial<Options>): Promise<Commit[]> {
+  const context = ObjectMerge.merge<Options>(options)
+  const commits = await GIT.commits(context.tag)
 
   return commits.split('\n').map((commit) => {
     const regex = new RegExp(DentConstants.commit)
