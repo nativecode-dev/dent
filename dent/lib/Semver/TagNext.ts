@@ -17,5 +17,11 @@ export async function TagNext(args: CommitParseOptions): Promise<string> {
     nextver.prerelease = []
   }
 
-  return `v${nextver.format()}`
+  const verstr = `v${nextver.format()}`
+
+  if (args.silent === false) {
+    console.log(verstr)
+  }
+
+  return verstr
 }

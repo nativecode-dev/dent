@@ -9,7 +9,7 @@ interface TagReleaseOptions extends DentOptions {}
 
 export async function TagRelease(args: TagReleaseOptions): Promise<string> {
   const branch = await GIT.branch()
-  const version = await TagNext({ ...args, branch })
+  const version = await TagNext({ ...args, branch, silent: true })
   const tagver = new SemVer(await GIT.lasttag(branch !== 'master'))
   const nextver = ['v', GetBranchVersion({ branch, version }).format()].join('')
 
