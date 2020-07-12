@@ -5,7 +5,6 @@ import { DentConstants } from '../DentConstants.ts'
 
 export interface Commit {
   comment: string
-  hash: string
   scope: string
   type: string
   value: number
@@ -45,11 +44,10 @@ export async function GetTagCommits(options: Partial<Options>): Promise<Commit[]
       }
 
       const comment = matches[4]
-      const hash = matches[1]
       const scope = matches[3]
       const type = matches[2].toLowerCase()
       const value = COMMIT_VALUE[type]
-      return { comment, hash, scope, type, value }
+      return { comment, scope, type, value }
     })
     .reduce<Commit[]>((results, current) => (current === undefined ? results : [...results, current]), [])
 
