@@ -23,13 +23,7 @@ export class Git {
     const version = tags
       .split('\n')
       .map((version) => new SemVer(version, { includePrerelease }))
-      .reduce<string>((version, current) => {
-        if (current.compare(version) !== 1) {
-          return version
-        }
-
-        return current.format()
-      }, '0.0.0')
+      .reduce<string>((version, current) => (current.compare(version) === 1 ? current.format() : version), '0.0.0')
 
     return `v${version}`
   }
@@ -40,6 +34,10 @@ export class Git {
 
   async tag(version: string) {
     return await this.execute('tag', version)
+  }
+
+  async taghash(tag: string) {
+    return await this.execute('rev-list', '-n 1', tag)
   }
 
   private async execute(command: string, ...args: string[]): Promise<string> {

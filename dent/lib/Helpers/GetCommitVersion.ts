@@ -1,23 +1,29 @@
-import { SemVer } from '../../deps.ts'
+import { ObjectMerge, SemVer } from '../../deps.ts'
 
 import { Commit } from './GetTagCommits.ts'
 
-export function GetCommitVersion(commits: Commit[], branch: string, version: string): SemVer {
-  const value = commits.reduce((result, commit) => (commit.value > result ? commit.value : 0), 0)
-  const options = { includePrerelease: branch !== 'master' }
-  console.log(branch, version)
+interface Options {
+  commits: Commit[]
+  branch: string
+  version: string
+}
+
+export function GetCommitVersion(options: Partial<Options>): SemVer {
+  const context = ObjectMerge.merge<Options>(options, { commits: [] })
+  const value = context.commits.reduce((result, commit) => (commit.value > result ? commit.value : 0), 0)
+  const semveropts = { includePrerelease: context.branch !== 'master' }
 
   switch (value) {
     case 3:
-      return new SemVer(version, options).inc('major')
+      return new SemVer(context.version, semveropts).inc('major')
 
     case 2:
-      return new SemVer(version, options).inc('minor')
+      return new SemVer(context.version, semveropts).inc('minor')
 
     case 1:
-      return new SemVer(version, options).inc('patch')
+      return new SemVer(context.version, semveropts).inc('patch')
 
     default:
-      return new SemVer(version, options)
+      return new SemVer(context.version, semveropts)
   }
 }

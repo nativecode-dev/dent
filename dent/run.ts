@@ -1,12 +1,14 @@
-import { Throttle, parse } from './deps.ts'
+import { Executor, Throttle, parse } from './deps.ts'
 
 import { Dent } from './lib/Dent.ts'
 import { TagNext } from './lib/Semver/TagNext.ts'
+import { TagCommits } from './lib/Semver/TagCommits.ts'
 import { TagRelease } from './lib/Semver/TagRelease.ts'
 
 const parsed = parse(Deno.args, { boolean: true })
 
 const dent = new Dent()
+dent.register('tag-commits', TagCommits)
 dent.register('tag-next', TagNext)
 dent.register('tag-release', TagRelease)
 

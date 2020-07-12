@@ -1,15 +1,21 @@
-import { SemVer } from '../../deps.ts'
+import { ObjectMerge, SemVer } from '../../deps.ts'
 
-export function GetBranchVersion(branch: string, version: SemVer): SemVer {
-  const nextver = new SemVer(version, { includePrerelease: branch !== 'master' })
+interface Options {
+  branch: string
+  version: string
+}
 
-  if (branch === 'master') {
+export function GetBranchVersion(options: Partial<Options>): SemVer {
+  const context = ObjectMerge.merge<Options>(options)
+  const nextver = new SemVer(context.version, { includePrerelease: context.branch !== 'master' })
+
+  if (context.branch === 'master') {
     return nextver
   }
 
-  if (branch === 'develop') {
-    return nextver.inc('prerelease')
+  if (context.branch === 'develop') {
+    return nextver.inc('pre', 'beta')
   }
 
-  return nextver.inc('pre')
+  return nextver.inc('pre', context.branch)
 }

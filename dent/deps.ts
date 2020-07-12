@@ -11,6 +11,7 @@ export { config } from 'https://deno.land/x/dotenv@v0.4.3/mod.ts'
 export { load } from 'https://deno.land/x/js_yaml_port/js-yaml.js'
 export { IExecResponse, OutputMode, exec } from 'https://deno.land/x/exec/mod.ts'
 
+export { Arguments, Command, Executor } from '../dent-core/mod.ts'
 export { ObjectMap } from '../object-map/mod.ts'
 export { ObjectMerge } from '../object-merge/mod.ts'
 export { Throttle } from '../throttle/mod.ts'
