@@ -8,8 +8,8 @@ export function GetBranchVersion(branch: string, version: SemVer): SemVer {
   }
 
   if (branch === 'develop') {
-    return nextver.inc('prerelease')
+    return nextver.inc('prerelease', 'beta')
   }
 
-  return nextver.inc('pre')
+  return nextver.inc('pre', branch)
 }
