@@ -1,3 +1,4 @@
+export * from './lib/Commands/TagCommand.ts'
 export * from './lib/Dent.ts'
 export * from './lib/DentCommand.ts'
 export * from './lib/DentCommandExec.ts'
