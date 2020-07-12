@@ -15,7 +15,8 @@ variables:
     - source $HOME/.bashrc
 
 test:
-  extends: .binaries
+  extends:
+    - .binaries
   stage: test
   script:
     - status-check //localhost:5672 //localhost:6379 http://localhost:5984
@@ -29,8 +30,6 @@ test:
     COUCHDB_PASSWORD: guest
     RABBITMQ_DEFAULT_USER: guest
     RABBITMQ_DEFAULT_PASS: guest
-  except:
-    - tags
 
 publish:
   extends:

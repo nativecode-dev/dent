@@ -1,4 +1,4 @@
-import { Throttle, parse } from './deps.ts'
+import { Executor, Throttle, parse } from './deps.ts'
 
 import { Dent } from './lib/Dent.ts'
 import { TagNext } from './lib/Semver/TagNext.ts'
