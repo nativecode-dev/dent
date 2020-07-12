@@ -39,6 +39,8 @@ export function GetCommitVersion(options: Partial<Options>): SemVer {
     } else {
       nextver.inc('pre', context.branch)
     }
+  } else if (type) {
+    nextver.inc(type, context.branch)
   }
 
   return nextver
