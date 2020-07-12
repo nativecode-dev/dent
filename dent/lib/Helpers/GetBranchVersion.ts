@@ -1,7 +1,7 @@
 import { SemVer } from '../../deps.ts'
 
-export function BranchVersion(branch: string, version: SemVer): SemVer {
-  const nextver = new SemVer(version)
+export function GetBranchVersion(branch: string, version: SemVer): SemVer {
+  const nextver = new SemVer(version, { includePrerelease: branch !== 'master' })
 
   if (branch === 'master') {
     return nextver

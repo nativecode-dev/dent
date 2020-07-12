@@ -1,19 +1,17 @@
 import { SemVer } from '../../deps.ts'
 
-import { Git } from '../Git.ts'
+import { GIT } from '../Git.ts'
 import { TagNext } from './TagNext.ts'
 import { DentOptions } from '../DentOptions.ts'
-import { BranchVersion } from '../Helpers/BranchVersion.ts'
+import { GetBranchVersion } from '../Helpers/GetBranchVersion.ts'
 
 interface TagReleaseOptions extends DentOptions {}
 
-const git = new Git()
-
 export async function TagRelease(args: TagReleaseOptions): Promise<string> {
-  const branch = await git.branch()
+  const branch = await GIT.branch()
   const nextver = new SemVer(await TagNext({ ...args, branch }))
-  const tagver = new SemVer(await git.lasttag(branch !== 'master'))
-  const version = ['v', BranchVersion(branch, nextver).format()].join('')
+  const tagver = new SemVer(await GIT.lasttag(branch !== 'master'))
+  const version = ['v', GetBranchVersion(branch, nextver).format()].join('')
 
   if (tagver.compare(nextver) === 0) {
     console.log('[tag-release]', 'no version change', branch, version)
@@ -21,8 +19,8 @@ export async function TagRelease(args: TagReleaseOptions): Promise<string> {
   }
 
   if (args['dry-run'] !== true) {
-    await git.tag(version)
-    await git.push()
+    await GIT.tag(version)
+    await GIT.push()
   }
 
   console.log('[tag-release]', branch, version)

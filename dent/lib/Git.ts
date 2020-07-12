@@ -1,4 +1,4 @@
-import { Essentials, ObjectMerge, SemVer, prerelease } from '../deps.ts'
+import { Essentials, ObjectMerge, SemVer } from '../deps.ts'
 
 import { DefaultGitOptions, GitExec, GitOptions } from './Helpers/GitExec.ts'
 
@@ -13,21 +13,22 @@ export class Git {
     return await this.execute('rev-parse', '--abbrev-ref HEAD')
   }
 
-  async commits(tag: string) {
-    return await this.execute('log', `${tag}..HEAD`, '--oneline')
+  async commits(tag: string, target: string = 'HEAD') {
+    return await this.execute('log', `${tag}..${target}`, '--oneline')
   }
 
-  async lasttag(includePreRelease: boolean): Promise<string> {
+  async lasttag(includePrerelease: boolean): Promise<string> {
     const tags = await this.execute('tag')
 
     const version = tags
       .split('\n')
-      .map((version) => new SemVer(version))
+      .map((version) => new SemVer(version, { includePrerelease }))
       .reduce<string>((version, current) => {
-        if (prerelease(current) !== null && includePreRelease) {
-          return current.format()
+        if (current.compare(version) !== 1) {
+          return version
         }
-        return version
+
+        return current.format()
       }, '0.0.0')
 
     return `v${version}`
@@ -46,3 +47,5 @@ export class Git {
     return response.output
   }
 }
+
+export const GIT = new Git(DefaultGitOptions)
