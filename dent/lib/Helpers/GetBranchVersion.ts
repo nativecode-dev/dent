@@ -14,7 +14,7 @@ export function GetBranchVersion(options: Partial<Options>): SemVer {
   }
 
   if (context.branch === 'develop') {
-    return nextver.inc('prerelease', 'beta')
+    return nextver.inc('pre', 'beta')
   }
 
   return nextver.inc('pre', context.branch)

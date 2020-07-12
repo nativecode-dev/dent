@@ -5,6 +5,7 @@ import { DentConstants } from '../DentConstants.ts'
 
 export interface Commit {
   comment: string
+  hash: string
   scope: string
   type: string
   value: number
@@ -33,21 +34,24 @@ export async function GetTagCommits(options: Partial<Options>): Promise<Commit[]
   const context = ObjectMerge.merge<Options>(options)
   const commits = await GIT.commits(context.tag)
 
-  return commits
+  const filtered = commits
     .split('\n')
     .map((commit) => {
       const regex = new RegExp(DentConstants.commit)
       const matches = regex.exec(commit)
 
       if (matches === null) {
-        return { comment: '', scope: '', type: 'chore', value: 0 }
+        return
       }
 
       const comment = matches[4]
+      const hash = matches[1]
       const scope = matches[3]
       const type = matches[2].toLowerCase()
       const value = COMMIT_VALUE[type]
-      return { comment, scope, type, value }
+      return { comment, hash, scope, type, value }
     })
-    .filter((commit) => commit.comment)
+    .reduce<Commit[]>((results, current) => (current === undefined ? results : [...results, current]), [])
+
+  return filtered
 }

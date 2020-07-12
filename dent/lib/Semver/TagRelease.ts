@@ -11,7 +11,7 @@ export async function TagRelease(args: TagReleaseOptions): Promise<string> {
   const branch = await GIT.branch()
   const version = await TagNext({ ...args, branch })
   const tagver = new SemVer(await GIT.lasttag(branch !== 'master'))
-  const nextver = ['v', GetBranchVersion({ branch, version: tagver.version }).format()].join('')
+  const nextver = ['v', GetBranchVersion({ branch, version }).format()].join('')
 
   if (tagver.compare(version) === 0) {
     console.log('[tag-release]', 'no version change, would be', nextver)
