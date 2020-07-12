@@ -31,16 +31,16 @@ export function GetCommitVersion(options: Partial<Options>): SemVer {
   const context = ObjectMerge.merge<Options>({ commits: [] }, options)
   const value = context.commits.reduce<number>((result, commit) => (commit.value > result ? commit.value : result), 0)
   const semveropts = { includePrerelease: context.branch !== 'master' }
-  const version = new SemVer(context.version, semveropts)
+  const nextver = new SemVer(context.version, semveropts)
   const type = getReleaseType(context.branch, value)
 
   if (options.branch !== 'master') {
     if (type) {
-      version.inc(type, context.branch)
+      nextver.inc(type, context.branch)
     } else {
-      version.inc('pre', context.branch)
+      nextver.inc('pre', context.branch)
     }
   }
 
-  return version
+  return nextver
 }

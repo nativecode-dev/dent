@@ -18,12 +18,17 @@ export class Git {
   }
 
   async lasttag(includePrerelease: boolean): Promise<string> {
+    const branch = await this.branch()
     const tags = await this.execute('tag')
 
     const version = tags
       .split('\n')
       .map((version) => new SemVer(version, { includePrerelease }))
-      .reduce<string>((version, current) => (current.compare(version) === 1 ? current.format() : version), '0.0.0')
+      .reduce<string>((version, current) => {
+        const newer = current.compare(version) === 1
+        const prerelease = includePrerelease ? current.prerelease.includes(branch) : false
+        return newer && prerelease ? current.format() : version
+      }, '0.0.0')
 
     return `v${version}`
   }
