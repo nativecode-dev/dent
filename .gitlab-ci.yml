@@ -10,7 +10,7 @@ variables:
 .binaries:
   before_script:
     - deno install --allow-net --name status-check status-check/run.ts
-    - deno install --allow-run --name dent dent/run.ts
+    - deno install --allow-env --allow-run --name dent dent/run.ts
     - echo "export PATH=/root/.deno/bin:$PATH" >> $HOME/.bashrc
     - source $HOME/.bashrc
 

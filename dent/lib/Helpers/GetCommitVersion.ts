@@ -1,4 +1,4 @@
-import { ObjectMerge, SemVer } from '../../deps.ts'
+import { ObjectMerge, ReleaseType, SemVer } from '../../deps.ts'
 
 import { Commit } from './GetTagCommits.ts'
 
@@ -8,22 +8,39 @@ interface Options {
   version: string
 }
 
-export function GetCommitVersion(options: Partial<Options>): SemVer {
-  const context = ObjectMerge.merge<Options>(options, { commits: [] })
-  const value = context.commits.reduce((result, commit) => (commit.value > result ? commit.value : 0), 0)
-  const semveropts = { includePrerelease: context.branch !== 'master' }
+const MAP: any = {
+  3: 'premajor',
+  2: 'preminor',
+  1: 'prepatch',
+  master: {
+    3: 'major',
+    2: 'minor',
+    1: 'patch',
+  },
+}
 
-  switch (value) {
-    case 3:
-      return new SemVer(context.version, semveropts).inc('major')
-
-    case 2:
-      return new SemVer(context.version, semveropts).inc('minor')
-
-    case 1:
-      return new SemVer(context.version, semveropts).inc('patch')
-
-    default:
-      return new SemVer(context.version, semveropts)
+function getReleaseType(branch: string, value: number): ReleaseType | undefined {
+  if (MAP[branch]) {
+    return MAP[branch][value]
   }
+
+  return MAP[value]
+}
+
+export function GetCommitVersion(options: Partial<Options>): SemVer {
+  const context = ObjectMerge.merge<Options>({ commits: [] }, options)
+  const value = context.commits.reduce<number>((result, commit) => (commit.value > result ? commit.value : result), 0)
+  const semveropts = { includePrerelease: context.branch !== 'master' }
+  const version = new SemVer(context.version, semveropts)
+  const type = getReleaseType(context.branch, value)
+
+  if (options.branch !== 'master') {
+    if (type) {
+      version.inc(type, context.branch)
+    } else {
+      version.inc('pre', context.branch)
+    }
+  }
+
+  return version
 }
