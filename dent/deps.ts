@@ -1,6 +1,6 @@
 export * as Path from 'https://deno.land/std@0.60.0/path/mod.ts'
 
-export { SemVer, compare, prerelease } from 'https://deno.land/x/semver@v1.0.0/mod.ts'
+export { ReleaseType, SemVer, clean, compare, prerelease } from 'https://deno.land/x/semver@v1.0.0/mod.ts'
 export { BError } from 'https://deno.land/x/berror/berror.ts'
 export { Args, ArgParsingOptions, parse } from 'https://deno.land/std@0.60.0/flags/mod.ts'
 export { exists } from 'https://deno.land/std@0.60.0/fs/exists.ts'
@@ -11,7 +11,7 @@ export { config } from 'https://deno.land/x/dotenv@v0.4.3/mod.ts'
 export { load } from 'https://deno.land/x/js_yaml_port/js-yaml.js'
 export { IExecResponse, OutputMode, exec } from 'https://deno.land/x/exec/mod.ts'
 
-export { Arguments, Command, Executor } from '../dent-core/mod.ts'
+export { Arguments, ArgumentOptions, Command, Executor } from '../dent-core/mod.ts'
 export { ObjectMap } from '../object-map/mod.ts'
 export { ObjectMerge } from '../object-merge/mod.ts'
 export { Throttle } from '../throttle/mod.ts'
