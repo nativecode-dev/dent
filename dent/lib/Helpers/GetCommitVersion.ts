@@ -30,8 +30,7 @@ function getReleaseType(branch: string, value: number): ReleaseType | undefined 
 export function GetCommitVersion(options: Partial<Options>): SemVer {
   const context = ObjectMerge.merge<Options>({ commits: [] }, options)
   const value = context.commits.reduce<number>((result, commit) => (commit.value > result ? commit.value : result), 0)
-  const semveropts = { includePrerelease: context.branch !== 'master' }
-  const nextver = new SemVer(context.version, semveropts)
+  const nextver = new SemVer(context.version, { includePrerelease: context.branch !== 'master' })
   const type = getReleaseType(context.branch, value)
 
   if (options.branch !== 'master') {

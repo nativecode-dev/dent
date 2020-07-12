@@ -21,6 +21,11 @@ export class Git {
     const branch = await this.branch()
     const tags = await this.execute('tag')
 
+    const last = tags
+      .split('\n')
+      .map((tag) => new SemVer(tag, { includePrerelease }))
+      .reduce<string>((version, current) => (current.prerelease.length === 0 ? current.version : version), '0.0.0')
+
     const version = tags
       .split('\n')
       .map((version) => new SemVer(version, { includePrerelease }))
@@ -28,7 +33,7 @@ export class Git {
         const newer = current.compare(version) === 1
         const prerelease = includePrerelease ? current.prerelease.includes(branch) : false
         return newer && prerelease ? current.format() : version
-      }, '0.0.0')
+      }, last)
 
     return `v${version}`
   }

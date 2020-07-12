@@ -1,6 +1,6 @@
 export * as Path from 'https://deno.land/std@0.60.0/path/mod.ts'
 
-export { ReleaseType, SemVer, compare, prerelease } from 'https://deno.land/x/semver@v1.0.0/mod.ts'
+export { ReleaseType, SemVer, clean, compare, prerelease } from 'https://deno.land/x/semver@v1.0.0/mod.ts'
 export { BError } from 'https://deno.land/x/berror/berror.ts'
 export { Args, ArgParsingOptions, parse } from 'https://deno.land/std@0.60.0/flags/mod.ts'
 export { exists } from 'https://deno.land/std@0.60.0/fs/exists.ts'

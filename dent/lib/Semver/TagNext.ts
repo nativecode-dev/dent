@@ -7,6 +7,6 @@ export async function TagNext(args: CommitParseOptions): Promise<void> {
   const next = await GetNextVersion()
 
   if (args.silent === false) {
-    console.log(next)
+    console.log(['v', next.version].join(''))
   }
 }
