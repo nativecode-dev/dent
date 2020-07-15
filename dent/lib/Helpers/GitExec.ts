@@ -1,22 +1,19 @@
-import { BError, Essentials, IExecResponse, OutputMode, exec } from '../../deps.ts'
+import { Essentials } from '../../deps.ts'
+
+import { Exec } from './Exec.ts'
 
 export interface GitOptions {
   executable: string
 }
 
-const GIT_PATH = await exec('which git', { output: OutputMode.Capture })
+const GIT_PATH = await Exec('which git')
+
+const decoder = new TextDecoder()
 
 export const DefaultGitOptions: Essentials.DeepPartial<GitOptions> = {
-  executable: GIT_PATH.output,
+  executable: GIT_PATH,
 }
 
-export async function GitExec(command: string, ...args: string[]): Promise<IExecResponse> {
-  const cmd = [GIT_PATH.output, command, ...args].join(' ')
-  const response = await exec(cmd, { output: OutputMode.Capture })
-
-  if (response.status.success) {
-    return response
-  }
-
-  throw new BError('command failed', undefined, { response })
+export function GitExec(command: string, ...args: string[]): Promise<string> {
+  return Exec(command, ...args)
 }

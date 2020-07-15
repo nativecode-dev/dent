@@ -51,8 +51,7 @@ export class Git {
   }
 
   private async execute(command: string, ...args: string[]): Promise<string> {
-    const response = await GitExec(command, ...args)
-    return response.output
+    return await GitExec(command, ...args)
   }
 }
 

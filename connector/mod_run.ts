@@ -1,4 +1,4 @@
-import { parse } from 'https://deno.land/std@0.60.0/flags/mod.ts'
+import { parse } from 'https://deno.land/std@0.61.0/flags/mod.ts'
 
 interface ProgramArgs {
   _: string[]

@@ -1,5 +1,5 @@
-import { QueueDeclareArgs } from '../deps.ts'
-
-export interface QueueOptions extends QueueDeclareArgs {
-  subject: string
+export interface QueueOptions {
+  exchange: string
+  queue: string
+  properties: any
 }
