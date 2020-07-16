@@ -9,7 +9,7 @@ import { TagRelease } from './lib/Semver/TagRelease.ts'
 const argv = parse(Deno.args, { boolean: true })
 const options: DentOptions = ObjectMerge.merge<DentOptions>({ 'dry-run': false, silent: false }, argv)
 
-const isCI = Deno.env.get('CI') === undefined
+const isCI = Deno.env.get('CI') !== undefined
 const isProduction = Deno.env.get('DENO_ENV') !== 'production'
 
 if (isCI || isProduction) {
