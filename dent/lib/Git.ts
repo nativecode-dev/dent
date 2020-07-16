@@ -1,16 +1,10 @@
-import { Essentials, ObjectMerge, SemVer } from '../deps.ts'
+import { SemVer } from '../deps.ts'
 
-import { DefaultGitOptions, GitExec, GitOptions } from './Helpers/GitExec.ts'
+import { Exec } from './Helpers/Exec.ts'
 
 export class Git {
-  private readonly options: GitOptions
-
-  constructor(options: Essentials.DeepPartial<GitOptions> = {}) {
-    this.options = ObjectMerge.merge<GitOptions>(DefaultGitOptions, options)
-  }
-
   async branch() {
-    return await this.execute('rev-parse', '--abbrev-ref HEAD')
+    return await this.execute('rev-parse', '--abbrev-ref', 'HEAD')
   }
 
   async commits(tag: string, target: string = 'HEAD') {
@@ -23,11 +17,15 @@ export class Git {
 
     const last = tags
       .split('\n')
-      .map((tag) => new SemVer(tag, { includePrerelease }))
+      .filter((tag) => tag !== '')
+      .map((tag) => {
+        return new SemVer(tag, { includePrerelease })
+      })
       .reduce<string>((version, current) => (current.prerelease.length === 0 ? current.version : version), '0.0.0')
 
     const version = tags
       .split('\n')
+      .filter((tag) => tag !== '')
       .map((version) => new SemVer(version, { includePrerelease }))
       .reduce<string>((version, current) => {
         const newer = current.compare(version) === 1
@@ -47,12 +45,12 @@ export class Git {
   }
 
   async taghash(tag: string) {
-    return await this.execute('rev-list', '-n 1', tag)
+    return await this.execute('rev-list', '-n', '1', tag)
   }
 
-  private async execute(command: string, ...args: string[]): Promise<string> {
-    return await GitExec(command, ...args)
+  private async execute(...args: string[]): Promise<string> {
+    return await Exec('git', ...args)
   }
 }
 
-export const GIT = new Git(DefaultGitOptions)
+export const GIT = new Git()

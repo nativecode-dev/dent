@@ -21,8 +21,12 @@ dent.register('tag-commits', TagCommits)
 dent.register('tag-next', TagNext)
 dent.register('tag-release', TagRelease)
 
-const tasks = options._.reduce<string[]>((results, current) => (typeof current === 'string' ? [...results, current] : results), [])
-  .filter((command) => dent.exists(command))
-  .map((command) => async () => await dent.exec(command, options))
+try {
+  const tasks = options._.reduce<string[]>((results, current) => (typeof current === 'string' ? [...results, current] : results), [])
+    .filter((command) => dent.exists(command))
+    .map((command) => async () => await dent.exec(command, options))
 
-await Throttle.serial(tasks)
+  await Throttle.serial(tasks)
+} catch (error) {
+  console.error(error)
+}
