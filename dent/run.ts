@@ -4,7 +4,7 @@ import { Dent } from './lib/Dent.ts'
 import { DentOptions } from './lib/DentOptions.ts'
 import { TagNext } from './lib/Semver/TagNext.ts'
 import { TagCommits } from './lib/Semver/TagCommits.ts'
-import { TagRelease } from './lib/Semver/TagRelease.ts'
+import { TagRelease, TagReleaseOptions } from './lib/Semver/TagRelease.ts'
 
 const argv = parse(Deno.args, { boolean: true })
 const options: DentOptions = ObjectMerge.merge<DentOptions>({ 'dry-run': false, silent: false }, argv)
@@ -19,7 +19,8 @@ if (isCI || isProduction) {
 const dent = new Dent()
 dent.register('tag-commits', TagCommits)
 dent.register('tag-next', TagNext)
-dent.register('tag-release', TagRelease)
+const test = ObjectMerge.merge<TagReleaseOptions>({ 'version-file': false }, argv)
+dent.register('tag-release', (args) => TagRelease(test))
 
 try {
   const tasks = options._.reduce<string[]>((results, current) => (typeof current === 'string' ? [...results, current] : results), [])
