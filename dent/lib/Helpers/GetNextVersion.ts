@@ -1,5 +1,3 @@
-import { SemVer } from '../../deps.ts'
-
 import { GIT } from '../Git.ts'
 import { GetTagCommits } from './GetTagCommits.ts'
 import { GetCommitVersion } from './GetCommitVersion.ts'
