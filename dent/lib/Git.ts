@@ -44,12 +44,12 @@ export class Git {
     return `v${version}`
   }
 
-  async push() {
-    return await this.execute('push')
-  }
-
   async tag(version: string) {
     return await this.execute('tag', version)
+  }
+
+  async tagpush() {
+    return await this.execute('push', 'origin', '--tags')
   }
 
   async taghash(tag: string) {

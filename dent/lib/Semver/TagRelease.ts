@@ -41,7 +41,7 @@ export async function TagRelease(args: TagReleaseOptions): Promise<void> {
 
   if (args['dry-run'] !== true) {
     await GIT.tag(nextver.version)
-    await GIT.push()
+    await GIT.tagpush()
   }
 
   console.log('[tag-release]', branch, nextver.version)
