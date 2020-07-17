@@ -48,12 +48,12 @@ export class Git {
     return await this.execute('tag', version)
   }
 
-  async tagpush() {
-    return await this.execute('push', 'origin', '--tags')
+  async taghash() {
+    return await this.execute('rev-list', '-n', '1', '--tags')
   }
 
-  async taghash(tag: string) {
-    return await this.execute('rev-list', '-n', '1', tag)
+  async tagpush() {
+    return await this.execute('push', 'origin', '--tags')
   }
 
   private async execute(...args: string[]): Promise<string> {
