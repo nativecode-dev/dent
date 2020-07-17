@@ -3,8 +3,16 @@ import { SemVer } from '../deps.ts'
 import { Exec } from './Helpers/Exec.ts'
 
 export class Git {
+  async add() {
+    return await this.execute('add', '-A', '.')
+  }
+
   async branch() {
     return await this.execute('rev-parse', '--abbrev-ref', 'HEAD')
+  }
+
+  async commit(message: string) {
+    return await this.execute('commit', '-m', message)
   }
 
   async commits(tag: string, target: string = 'HEAD') {
@@ -37,7 +45,7 @@ export class Git {
   }
 
   async push() {
-    return await this.execute('push', 'origin', '--tags')
+    return await this.execute('push')
   }
 
   async tag(version: string) {
